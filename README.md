@@ -50,3 +50,7 @@
   - SNSシェア機能
   - 通知機能(サービスを継続的に使ってもらえるようにメールまたはLINE Messaging APIで保存したロケーションを通知)
   - 経由地追加機能(複数の目的地へ行きたい方向け)
+
+
+# ■ ER図
+[![Image from Gyazo](https://i.gyazo.com/1749643e17bb6ccb9574ac01e283c194.png)](https://gyazo.com/1749643e17bb6ccb9574ac01e283c194)
