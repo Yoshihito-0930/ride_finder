@@ -1,10 +1,11 @@
 services:
   db:
-    image: postgres:latest
-    platform: linux/amd64
+    image: postgres:16
     environment:
       TZ: Asia/Tokyo
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
