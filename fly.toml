@@ -1,19 +1,13 @@
-# fly.toml app configuration file generated for ride-finder on 2024-05-22T02:52:11+09:00
+# fly.toml app configuration file generated for ride-finder on 2024-05-22T15:59:27+09:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'ride-finder'
 primary_region = 'nrt'
-console_command = '/rails/bin/rails console'
-
-[env]
-  RAILS_ENV = "production"
 
 [build]
-
-[deploy]
-  release_command = './bin/rails db:migrate'
+  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 3000
@@ -27,7 +21,3 @@ console_command = '/rails/bin/rails console'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-
-[[statics]]
-  guest_path = '/app/public'
-  url_prefix = '/'
