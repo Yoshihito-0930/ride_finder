@@ -16,6 +16,11 @@ gem 'fly'
 
 gem 'tailwindcss-rails'
 
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-line'
+gem 'omniauth-rails_csrf_protection'
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
