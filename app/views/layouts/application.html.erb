@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>App</title>
+    <title>Ride Finder</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,7 +12,11 @@
   </head>
 
   <body>
-    <%= render "layouts/header" %>
+    <% if logged_in? %>
+      <%= render 'layouts/header' %>
+    <% else %>
+      <%= render 'layouts/before_login_header' %>
+    <% end %>
     <%= yield %>
     <%= render "layouts/footer" %>
   </body>
