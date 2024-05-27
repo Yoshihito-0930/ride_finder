@@ -2,19 +2,19 @@
   <div class="navbar bg-base-300 ">
     <div class="flex-3 px-2 lg:flex-none">
     	<%= link_to '/', class: "navbar-brand" do %>
-        <%= image_tag 'logo.png', size:'80x80' %>
+        <%= image_tag 'ride_finder_logo.png', size:'80x80' %>
     	<% end %>
     </div> 
-    <div class="flex justify-end flex-1 px-5">
+    <div class="flex justify-end flex-1 px-2 ">
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn w-132">
           メニュー
           <svg width="12px" height="12px" class="h-2 w-2 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
         </div>
           <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-200 rounded max-w-xs mt-4 whitespace-nowrap">
-            <li><a class="btn btn-sm btn-block btn-ghost">後で行きたい</a></li> 
-            <li><a class="btn btn-sm btn-block btn-ghost">お気に入り</a></li>
-            <li><a class="btn btn-sm btn-block btn-ghost">マイページ</a></li>
+            <li><%= link_to "後で行きたい", "#", class: "btn btn-sm btn-block btn-ghost" %></li>
+            <li><%= link_to "お気に入り", "#", class: "btn btn-sm btn-block btn-ghost" %></li>
+            <li><%= link_to "マイページ", "#", class: "btn btn-sm btn-block btn-ghost" %></li>
             <li><%= link_to "ログアウト", signout_path, data: { turbo_method: :delete }, class: "btn btn-sm btn-block btn-ghost" %></li>
           </ul>
         </div>
