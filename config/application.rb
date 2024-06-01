@@ -6,31 +6,16 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module App
+module RideFinder
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
+    # Other configurations...
     config.load_defaults 7.0
+    config.generators do |g|
+      g.helper false             # helper ファイルを作成しない
+      g.test_framework false     # test ファイルを作成しない
+      g.skip_routes true         # ルーティングの記述を作成しない
+    end
 
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
+    config.i18n.default_locale = :ja
   end
 end
-
-# module RideFinder
-#   class Application < Rails::Application
-#     # Other configurations...
-
-#      config.generators do |g|
-#       g.helper false             # helper ファイルを作成しない
-#       g.test_framework false     # test ファイルを作成しない
-#       g.skip_routes true         # ルーティングの記述を作成しない
-#     end
-
-#     config.hosts << "ride-finder-ancient-feather-1535.fly.dev"
-#   end
-# end
