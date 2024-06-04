@@ -21,6 +21,7 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-line'
 gem 'omniauth-rails_csrf_protection'
 
+gem 'google_places'
 gem 'geocoder'
 
 gem 'rails-i18n'

@@ -110,7 +110,13 @@ GEM
       csv (>= 3.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    google_places (2.0.0)
+      httparty (>= 0.13.1)
     hashie (5.0.0)
+    httparty (0.22.0)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -299,6 +305,7 @@ DEPENDENCIES
   dotenv-rails
   fly
   geocoder
+  google_places
   jbuilder
   jsbundling-rails
   omniauth
