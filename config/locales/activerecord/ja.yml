@@ -10,12 +10,12 @@ ja:
         name: "名前"
       condition:
         value: "値"
-  enums:
-    visit_category:
-      scenic_spot: "景勝地"
-      tourist_attraction: "観光名所"
-      roadside_station: "道の駅"
-    condition:
-      time: "時間"
-      distance: "距離"
+        condition_type:
+          time: "時間"
+          distance: "距離"
+      visit_category:
+        name:
+          scenic_spot: "景勝地"
+          tourist_attraction: "観光名所"
+          roadside_station: "道の駅"
 

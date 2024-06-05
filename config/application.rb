@@ -10,12 +10,11 @@ module RideFinder
   class Application < Rails::Application
     # Other configurations...
     config.load_defaults 7.0
+    config.i18n.default_locale = :ja
     config.generators do |g|
       g.helper false             # helper ファイルを作成しない
       g.test_framework false     # test ファイルを作成しない
       g.skip_routes true         # ルーティングの記述を作成しない
     end
-
-    config.i18n.default_locale = :ja
   end
 end

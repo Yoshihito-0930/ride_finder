@@ -1,2 +1,0 @@
-class SearchResultsController < ApplicationController
-end

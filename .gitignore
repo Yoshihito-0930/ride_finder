@@ -15,7 +15,6 @@
 !/tmp/.keep
 
 # Ignore database configuration file and secrets
-/config/database.yml
 /config/secrets.yml
 
 # Ignore pidfiles, but keep the directory.
