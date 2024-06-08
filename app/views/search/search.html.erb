@@ -11,6 +11,14 @@ function initMap() {
 
   const map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+  /*
+  document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const selectedCategory = document.querySelector('select[name="category"]').value;
+    searchPlaces(map, selectedCategory);
+  });
+  */
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {
@@ -21,7 +29,7 @@ function initMap() {
         map.setCenter(pos); // 現在地を中心に設定
       },
       function() {
-        // エラーハンドリング：現在地の取得に失敗した場合は東京を中心に設定
+        // 現在地の取得に失敗した場合は東京を中心に設定
         map.setCenter(defaultLocation);
       }
     );
@@ -30,5 +38,35 @@ function initMap() {
     map.setCenter(defaultLocation);
   }
 }
+
+/*
+function searchPlaces(map, category) {
+  const service = new google.maps.places.PlacesService(map);
+  const request = {
+    location: map.getCenter(),
+    radius: '5000',
+    type: [category]
+  };
+
+  service.nearbySearch(request, function(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      for (let i = 0; i < results.length; i++) {
+        createMarker(results[i], map);
+      }
+    }
+  });
+}
+
+function createMarker(place, map) {
+  new google.maps.Marker({
+    map: map,
+    position: place.geometry.location
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initMap();
+});
+*/
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&callback=initMap"></script>
