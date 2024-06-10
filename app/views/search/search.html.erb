@@ -1,7 +1,13 @@
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 600px;"></div>
-<div id="places"></div>
-<button id="more">もっと見る</button>
+<div id="container">
+  <div id="map"></div>
+  <div id="sidebar">
+    <h2>検索結果</h2>
+    <ul id="places"></ul>
+    <button id="more">もっと見る</button>
+  </div>
+</div>
 
 <script>
 let map;
