@@ -2,13 +2,45 @@
   <div class="navbar bg-base-300 ">
     <div class="flex-3 px-5 lg:flex-none">
     	<%= link_to '/', class: "navbar-brand" do %>
-        <%= image_tag 'ride_finder_logo.png', size:'80x80' %>
+        <%= image_tag 'ride_finder_logo.png', size:'70x70' %>
     	<% end %>
     </div> 
+    <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
+    <dialog id="my_modal_2" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
+        <p class="py-4"></p>
+        <div>
+          <%= form_with url: search_results_path, method: :get, local: true do |form| %>
+            <div>
+              <%= form.label :category, "カテゴリー：" %>
+              <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, class: 'form-control select w-full max-w-xs' %>
+            </div>
+            <h3 class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</h3>
+            <div>
+              <%= form.label :condition, "条件：" %>
+              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, id: 'condition-select', class: 'form-control w-full' %>
+            </div>
+            <div id="value-distance" style="display:none;">
+              <%= form.label :value, "距離：" %>
+              <%= form.select :value, [15, 30, 45].map { |v| [v, v] }, class: 'form-control w-full' %>
+            </div>
+            <div id="value-time" style="display:none;">
+              <%= form.label :value, "時間：" %>
+              <%= form.select :value, [30, 45, 60, 90].map { |v| ["#{v}分", v] }, class: 'form-control w-full' %>
+            </div>
+            <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
+          <% end %>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
     <div class="flex justify-end flex-1 px-5 ">
       <div class="dropdown ">
         <div tabindex="0" role="button" class="btn btn-ghost btn-block rounded-btn">
-          メニュー  
+          メニュー
           <svg width="12px" height="12px" class="h-3 w-3 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
         </div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-5 shadow bg-base-200 rounded max-w-xs mt-4">

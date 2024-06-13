@@ -4,7 +4,7 @@ module.exports = {
   content: [
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
-    './app/views/**/*.{erb,haml,html,slim,js}',
+    './app/views/**/*.{html.erb,erb,haml,html,slim,js}',
     './app/assets/stylesheets/**/*.css',
     './node_modules/daisyui/dist/**/*.js'
   ],
