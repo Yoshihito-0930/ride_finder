@@ -9,17 +9,16 @@
     <dialog id="my_modal_2" class="modal">
       <div class="modal-box">
         <h3 class="font-bold text-lg ">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
-        <p class="py-4">ああああ</p>
         <div>
-          <%= form_with url: search_results_path, method: :get, local: true class: "max-w-sm mx-auto" do |form| %>
+          <%= form_with url: search_results_path, method: :get, local: true, class: "max-w-sm mx-auto" do |form| %>
             <div class= "text-center p-10 text-base">
               <%= form.label :category, "カテゴリー：" %>
-              <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, id: "countries", class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
+              <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
             </div>
             <h3 class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</h3>
-            <div>
+            <div class= "text-center p-10 text-base">
               <%= form.label :condition, "条件：" %>
-              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, id: 'condition-select', class: 'form-control w-full' %>
+              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
             </div>
             <div id="value-distance" style="display:none;">
               <%= form.label :value, "距離：" %>
@@ -29,7 +28,7 @@
               <%= form.label :value, "時間：" %>
               <%= form.select :value, [30, 45, 60, 90].map { |v| ["#{v}分", v] }, class: 'form-control w-full' %>
             </div>
-            <div class="flex justify-center">
+            <div class="class= "text-center" >
               <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
             </div>
           <% end %>
