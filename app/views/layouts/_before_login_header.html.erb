@@ -7,24 +7,26 @@
     </div>
     <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
     <dialog id="my_modal_2" class="modal">
-      <div class="modal-box">
+      <div class="modal-box ">
         <h3 class="font-bold text-lg ">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
-        <div>
-          <%= form_with url: search_results_path, method: :get, local: true, class: "max-w-sm mx-auto" do |form| %>
-            <div class= "text-center p-10 text-base">
-              <%= form.label :category, "カテゴリー：" %>
+        <div class="items-center justify-center">
+          <%= form_with url: search_results_path, method: :get, local: true, class: "items-center justify-center " do |form| %>
+            <div class= "text-center p-5 text-base">
+              <%= form.label :category, class: 'hidden' %>
               <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
             </div>
             <h3 class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</h3>
-            <div class= "text-center p-10 text-base">
-              <%= form.label :condition, "条件：" %>
+            <div class= "text-center p-5 text-base flex justify-center items-center">
+              <%= form.label :condition, class: 'hidden' %>
               <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
             </div>
             <div id="value-distance" style="display:none;">
+              <h3 class="font-bold text-lg">現在地から何km以内のスポットを探すか指定して下さい</h3>
               <%= form.label :value, "距離：" %>
               <%= form.select :value, [15, 30, 45].map { |v| [v, v] }, class: 'form-control w-full' %>
             </div>
             <div id="value-time" style="display:none;">
+            <h3 class="font-bold text-lg">現在地から何分以内のスポットを探すか指定して下さい</h3>
               <%= form.label :value, "時間：" %>
               <%= form.select :value, [30, 45, 60, 90].map { |v| ["#{v}分", v] }, class: 'form-control w-full' %>
             </div>
