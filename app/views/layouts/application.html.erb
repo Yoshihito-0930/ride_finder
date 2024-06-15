@@ -8,7 +8,6 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" async defer></script>
   </head>
 
   <body>
@@ -20,5 +19,31 @@
     <%= render 'shared/flash_message' %>
     <%= yield %>
     <%= render "layouts/footer" %>
+    <script>
+  function showModal() {
+    const modal = document.getElementById('my_modal_2');
+    modal.showModal();
+
+    // モーダルが表示された後にイベントリスナーを追加
+    const conditionSelect = document.getElementById('condition-select');
+    const valueDistance = document.getElementById('value-distance');
+    const valueTime = document.getElementById('value-time');
+
+    if (conditionSelect) {
+      conditionSelect.addEventListener('change', function() {
+        if (this.value === 'distance') {
+          valueDistance.style.display = 'block';
+          valueTime.style.display = 'none';
+        } else if (this.value === 'time') {
+          valueDistance.style.display = 'none';
+          valueTime.style.display = 'block';
+        } else {
+          valueDistance.style.display = 'none';
+          valueTime.style.display = 'none';
+        }
+      });
+    }
+  }
+</script>
   </body>
 </html>
