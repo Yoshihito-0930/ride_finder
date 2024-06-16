@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   root 'staticpages#top'
   get 'contact', to: 'staticpages#contact'
 
+  get 'terms_of_service', to: 'staticpages#terms_of_service'
+
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: redirect('/')
   get 'logout', to: 'sessions#destroy'
