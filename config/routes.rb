@@ -15,5 +15,4 @@ Rails.application.routes.draw do
   
   resource :users, only: %i[show edit update]
   # Defines the root path route ("/")
-  # root "articles#index"
 end
