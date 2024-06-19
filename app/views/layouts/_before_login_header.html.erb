@@ -9,8 +9,7 @@
     <dialog id="my_modal_2" class="modal">
       <div class="modal-box ">
         <h3 class="font-bold text-lg ">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
-        <div class="items-center justify-center">
-          <%= form_with url: search_results_path, method: :get, local: true, class: "items-center justify-center " do |form| %>
+          <%= form_with url: search_results_path, method: :get, local: true, class: "flex items-center justify-center " do |form| %>
             <div class= "text-center p-5 text-base">
               <%= form.label :category, class: 'hidden' %>
               <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, class: 'form-control select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ' %>
@@ -34,13 +33,23 @@
               <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
             </div>
           <% end %>
-        </div>
       </div>
       <form method="dialog" class="modal-backdrop">
         <button>close</button>
       </form>
     </dialog>
-
+          
+    <div class="flex justify-end flex-1 px-5">
+      <div class="flex items-stretch">
+        <%= button_to "LINEでログイン", "/auth/line",method: :post, class: "btn btn-ghost rounded-btn" %>
+        <div class="dropdown dropdown-end">
+          <div class="drawer drawer-end">
+            <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+            <div class="drawer-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="flex justify-end flex-1 px-5">
       <div class="flex items-stretch">
         <%= button_to "Googleでログイン", "/auth/google_oauth2",method: :post, class: "btn btn-ghost rounded-btn" %>

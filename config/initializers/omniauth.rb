@@ -4,4 +4,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
             ENV['GOOGLE_CLIENT_SECRET'], {
     scope: 'userinfo.email, userinfo.profile'
   }
+
+  provider :line,
+            ENV['LINE_KEY'],
+            ENV['LINE_SECRET']
 end
