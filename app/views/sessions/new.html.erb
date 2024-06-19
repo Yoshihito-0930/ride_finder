@@ -1,0 +1,31 @@
+<div class="card w-96 bg-base-100 shadow-xl">
+  <figure class="px-10 pt-10">
+    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" class="rounded-xl" />
+  </figure>
+  <div class="card-body items-center text-center">
+    <h2 class="card-title">ログイン</h2>
+    <p>LINEもしくはGoogleアカウントでログイン</p>
+    <div class="flex justify-end flex-1 px-5">
+    <div class="flex items-stretch">
+      <%= button_to "LINEでログイン", "/auth/line",method: :post, class: "btn btn-ghost rounded-btn" %>
+      <div class="dropdown dropdown-end">
+        <div class="drawer drawer-end">
+          <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+          <div class="drawer-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-end flex-1 px-5 ">
+    <div class="flex items-stretch">
+      <%= button_to "Googleでログイン", "/auth/google_oauth2",method: :post, class: "btn btn-ghost rounded-btn" %>
+      <div class="dropdown dropdown-end">
+        <div class="drawer drawer-end">
+          <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+          <div class="drawer-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
