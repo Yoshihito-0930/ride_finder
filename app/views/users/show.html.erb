@@ -1,11 +1,11 @@
-<div class="collapse collapse-arrow bg-base-200">
-        <h2>マイページメニュー</h2>
-        <%= image_tag @user.image %>
-        <%= @user.name %>
-        <ul class="menu items-center">
-          <li><%= link_to "お気に入り", "#" %></li>
-          <li><%= link_to "後で行きたい", "#" %></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div class="bg-base-200">
+  <ul class="menu items-center">
+    <h2>マイページメニュー</h2>
+    <%= image_tag @user.image %>
+    <%= @user.name %>
+    <li><%= link_to "お気に入り", "#" %></li>
+    <li><%= link_to "後で行きたい", "#" %></li>
+  </ul>
+</div>
+
+

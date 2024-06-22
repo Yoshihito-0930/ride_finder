@@ -1,3 +1,4 @@
+<div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 600px;"></div>
 <div id="container">
@@ -5,8 +6,9 @@
   <div id="sidebar">
     <h2>検索結果</h2>
     <ul id="places"></ul>
-    <button id="more">もっと見る</button>
+    <button class="btn" id="more">もっと見る</button>
   </div>
+</div>
 </div>
 
 <script>
@@ -70,7 +72,12 @@ function performNearbySearch(location) {
   }
 
   service.nearbySearch(
-    { location: location, radius: 5000, type: "<%= @category %>" },
+    { 
+      location: location,
+      radius: 5000,
+      type: ["%= @category %>"],
+      language: 'ja'
+    },
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
 

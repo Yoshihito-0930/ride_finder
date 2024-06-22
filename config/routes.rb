@@ -14,6 +14,6 @@ Rails.application.routes.draw do
   get 'search', to: 'search#index'
   get 'search/results', to: 'search#search'
   
+  # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
-  # Defines the root path route ("/")
 end
