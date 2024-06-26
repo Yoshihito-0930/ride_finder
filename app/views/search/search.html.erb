@@ -72,17 +72,27 @@ function performNearbySearch(location) {
   }
 
   let request
-  if ("<%= @category %>" === "tourist_attraction") {
+  let typeCategory
+  let textCategory
+  switch("<%= @category %>"){
+    case "tourist_attraction":
+      typeCategory = "<%= @category %>";
+      break;
+    case "scenic_spot":
+      textCategory = "景勝地";
+      break;
+    case "roadside_station":
+      textCategory = "道の駅";
+      break;
+  }
+  if ( typeCategory ) {
     request = {
       location: pos,
       radius: "5000",
-      type: ["<%= @category %>"],
+      type: [typeCategory],
       language: 'ja'
     };
-  }
-
-  
-  service.nearbySearch(request,
+    service.nearbySearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
 
@@ -96,8 +106,30 @@ function performNearbySearch(location) {
           };
         }
       }
-    }
-  );
+    });
+  } else if( textCategory){
+    request = {
+      location: pos,
+      radius: "5000",
+      query: textCategory,
+      language: 'ja'
+    };
+    service.textSearch(request,
+    function (results, status, pagination) {
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
+
+      addPlaces(results, map);
+      if (moreButton) {
+        moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+        if (pagination && pagination.hasNextPage) {
+          getNextPage = function () {
+            pagination.nextPage();
+          };
+        }
+      }
+    });
+  }
 }
 
 function addPlaces(places, map) {
