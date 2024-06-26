@@ -27,7 +27,7 @@ function initMap() {
           document.getElementById("map"),
           {
             center: pos,
-            zoom: 10,
+            zoom: 12,
           }
         );
         performNearbySearch(pos);
@@ -71,13 +71,18 @@ function performNearbySearch(location) {
     };
   }
 
-  service.nearbySearch(
-    { 
-      location: location,
-      radius: 5000,
-      type: ["%= @category %>"],
+  let request
+  if ("<%= @category %>" === "tourist_attraction") {
+    request = {
+      location: pos,
+      radius: "5000",
+      type: ["<%= @category %>"],
       language: 'ja'
-    },
+    };
+  }
+
+  
+  service.nearbySearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
 

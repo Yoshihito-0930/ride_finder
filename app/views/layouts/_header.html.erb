@@ -19,7 +19,7 @@
             <h3 class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</h3>
             <div>
               <%= form.label :condition, "条件：" %>
-              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered select-sm w-full max-w-xs" %>
+              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
             </div>
             <div id="value-distance" style="display:none;">
               <%= form.label :value, "距離：" %>
@@ -39,15 +39,15 @@
     </dialog>
     <div class="flex justify-end flex-1 px-5 ">
       <div class="dropdown ">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-block rounded-btn">
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn w-full max-w-xs">
           メニュー
-          <svg width="12px" height="12px" class="h-3 w-3 fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
+          <svg width="12px" height="12px" class="fill-current opacity-60 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048"><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path></svg>
         </div>
-        <ul tabindex="0" class="menu dropdown-content z-[1] p-5 shadow bg-base-200 rounded max-w-xs mt-4">
+        <ul tabindex="0" class="dropdown-content menu rounded-box z-[1] min-w-[10rem] p-2 shadow bg-base-200 rounded mt-4 whitespace-nowrap">
           <!-- <li><%= link_to "後で行きたい", "#", class: "btn btn-block btn-ghost" %></li>
           <li><%= link_to "お気に入り", "#", class: "btn btn-block btn-ghost" %></li> -->
-          <li><%= link_to "マイページ", users_path, class: "btn btn-block btn-ghost" %></li>
-          <li><%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "btn btn-block btn-ghost" %></li>
+          <li><%= link_to "マイページ", users_path %></li>
+          <li><%= link_to "ログアウト", logout_path, data: { turbo_method: :delete } %></li>
         </ul>
       </div>
     </div>
