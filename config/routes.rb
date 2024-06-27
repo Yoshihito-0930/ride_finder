@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   root 'staticpages#top'
   get 'contact', to: 'staticpages#contact'
+  get 'privacy_policy', to: 'staticpages#privacy_policy'
 
   get 'terms_of_service', to: 'staticpages#terms_of_service'
 

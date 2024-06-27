@@ -45,24 +45,3 @@
     </div>
   </div>
 </header>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const conditionSelect = document.getElementById('condition-select');
-  const valueDistance = document.getElementById('value-distance');
-  const valueTime = document.getElementById('value-time');
-
-  conditionSelect.addEventListener('change', function() {
-    if (this.value === 'distance') {
-      valueDistance.style.display = 'block';
-      valueTime.style.display = 'none';
-    } else if (this.value === 'time') {
-      valueDistance.style.display = 'none';
-      valueTime.style.display = 'block';
-    } else {
-      valueDistance.style.display = 'none';
-      valueTime.style.display = 'none';
-    }
-  });
-});
-</script>
