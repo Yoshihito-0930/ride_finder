@@ -1,3 +1,4 @@
+<div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 600px;"></div>
 <div id="container">
@@ -5,8 +6,9 @@
   <div id="sidebar">
     <h2>検索結果</h2>
     <ul id="places"></ul>
-    <button id="more">もっと見る</button>
+    <button class="btn" id="more">もっと見る</button>
   </div>
+</div>
 </div>
 
 <script>
@@ -25,7 +27,7 @@ function initMap() {
           document.getElementById("map"),
           {
             center: pos,
-            zoom: 10,
+            zoom: 12,
           }
         );
         performNearbySearch(pos);
@@ -69,8 +71,28 @@ function performNearbySearch(location) {
     };
   }
 
-  service.nearbySearch(
-    { location: location, radius: 5000, type: "<%= @category %>" },
+  let request
+  let typeCategory
+  let textCategory
+  switch("<%= @category %>"){
+    case "tourist_attraction":
+      typeCategory = "<%= @category %>";
+      break;
+    case "scenic_spot":
+      textCategory = "景勝地";
+      break;
+    case "roadside_station":
+      textCategory = "道の駅";
+      break;
+  }
+  if ( typeCategory ) {
+    request = {
+      location: pos,
+      radius: "5000",
+      type: [typeCategory],
+      language: 'ja'
+    };
+    service.nearbySearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
 
@@ -84,8 +106,30 @@ function performNearbySearch(location) {
           };
         }
       }
-    }
-  );
+    });
+  } else if( textCategory){
+    request = {
+      location: pos,
+      radius: "5000",
+      query: textCategory,
+      language: 'ja'
+    };
+    service.textSearch(request,
+    function (results, status, pagination) {
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
+
+      addPlaces(results, map);
+      if (moreButton) {
+        moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+        if (pagination && pagination.hasNextPage) {
+          getNextPage = function () {
+            pagination.nextPage();
+          };
+        }
+      }
+    });
+  }
 }
 
 function addPlaces(places, map) {
