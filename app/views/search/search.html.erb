@@ -89,7 +89,7 @@ function performNearbySearch(location) {
 
   const radius = "<%= @condition_value %>"
   
-  if ( typeCategory ) {
+  if (typeCategory) {
     request = {
       location: pos,
       radius: radius,
@@ -111,7 +111,7 @@ function performNearbySearch(location) {
         }
       }
     });
-  } else if( textCategory){
+  } else if(textCategory){
     request = {
       location: pos,
       radius: radius,
@@ -159,11 +159,13 @@ function addPlaces(places, map) {
         scaledSize: new google.maps.Size(25, 25),
       };
 
+      const location = place.geometry.location
+
       new google.maps.Marker({
         map,
         icon: image,
         title: place.name,
-        position: place.geometry.location,
+        position: location,
       });
 
       const li = document.createElement("li");
@@ -194,14 +196,21 @@ function addPlaces(places, map) {
       // 営業時間を表示
       if (place.opening_hours && place.opening_hours.weekday_text) {
         const hours = document.createElement("p");
-        hours.textContent = `Opening Hours: ${place.opening_hours.weekday_text.join(", ")}`;
+        hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
         li.appendChild(hours);
       }
+
+      const goToDestination = document.createElement("a");
+      goToDestination.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`
+      goToDestination.target = "_blank";
+      goToDestination.textContent = "ここに行ってみる"
+      li.appendChild(goToDestination);
+
 
       placesList.appendChild(li);
 
       li.addEventListener("click", function() {
-        map.setCenter(place.geometry.location);
+        map.setCenter(location);
       });
     }
   }
