@@ -26,6 +26,8 @@ gem 'geocoder'
 
 gem 'gemini-ai', '~> 4.1.0'
 
+gem 'whenever'
+
 gem 'rails-i18n'
 gem 'ransack'
 
