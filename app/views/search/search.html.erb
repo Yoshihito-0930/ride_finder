@@ -121,6 +121,7 @@ function performNearbySearch(location) {
     service.textSearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+        /*
         const filteredResults = results.filter(place => {
           const distance = google.maps.geometry.spherical.computeDistanceBetween(
             location,
@@ -128,6 +129,13 @@ function performNearbySearch(location) {
           );
           return distance <= radius; 
           // return distance >= 30000 && distance <= 50000;  // 30km以上50km以内
+        } */
+        
+        let filteredResults = results.filter(result => {
+          if (textCategory === "道の駅") {
+            return result.name.includes('道の駅') && !result.name.includes('駐車場');
+          }
+          return true; // 他のカテゴリーはフィルタリングしない
         });
       }
 
@@ -189,14 +197,17 @@ function addPlaces(places, map) {
       // 評価を表示
       if (place.rating) {
         const rating = document.createElement("p");
-        rating.textContent = `評価☆ ${place.rating}(レビュー数:${place.user_ratings_total})`;
+        rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
         li.appendChild(rating);
       }
 
+      
       // 営業時間を表示
-      if (place.opening_hours && place.opening_hours.weekday_text) {
+      // 出来ない！！ 後からやるconsole.log(place.opening_hours)
+
+      if (place.current_opening_hours && place.opening_hours.weekday_text) {
         const hours = document.createElement("p");
-        hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
+        hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
         li.appendChild(hours);
       }
 
@@ -205,6 +216,8 @@ function addPlaces(places, map) {
       goToDestination.target = "_blank";
       goToDestination.textContent = "ここに行ってみる"
       li.appendChild(goToDestination);
+
+
 
 
       placesList.appendChild(li);
