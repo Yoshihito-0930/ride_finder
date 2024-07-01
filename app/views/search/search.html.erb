@@ -120,26 +120,29 @@ function performNearbySearch(location) {
     };
     service.textSearch(request,
     function (results, status, pagination) {
+      let filteredResults = results
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+        filteredResults = "検索に該当する候補地がありません"
+    }else{
         /*
-        const filteredResults = results.filter(place => {
+        let filteredResults = results.filter(place => {
           const distance = google.maps.geometry.spherical.computeDistanceBetween(
             location,
             place.geometry.location
           );
           return distance <= radius; 
           // return distance >= 30000 && distance <= 50000;  // 30km以上50km以内
-        } */
+        } 
+        */
         
-        let filteredResults = results.filter(result => {
-          if (textCategory === "道の駅") {
-            return result.name.includes('道の駅') && !result.name.includes('駐車場');
+        if (textCategory === "道の駅"){
+          filteredResults = results.filter(result => {
+            return result.name.includes('道の駅') && !result.name.includes('駐車場'); // 名前に '道の駅' を含む
           }
-          return true; // 他のカテゴリーはフィルタリングしない
-        });
-      }
+      )};
+    }
 
-      addPlaces(results, map);
+      addPlaces(filteredResults, map);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
 
@@ -157,75 +160,78 @@ function addPlaces(places, map) {
   const placesList = document.getElementById("places");
   placesList.innerHTML = ""; // Clear previous results
 
-  for (const place of places) {
-    if (place.geometry && place.geometry.location) {
-      const image = {
-        url: place.icon,
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(25, 25),
-      };
+  if (Array.isArray(places)){
+    for (const place of places) {
+      if (place.geometry && place.geometry.location) {
+        const image = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25),
+        };
 
-      const location = place.geometry.location
+        const location = place.geometry.location
 
-      new google.maps.Marker({
-        map,
-        icon: image,
-        title: place.name,
-        position: location,
-      });
+        new google.maps.Marker({
+          map,
+          icon: image,
+          title: place.name,
+          position: location,
+        });
 
-      const li = document.createElement("li");
-      li.textContent = `名称：${place.name}`;
-      if (place.photos && place.photos.length > 0) {
-        const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
-        const img = document.createElement("img");
-        img.src = firstPhotoUrl;
-        img.style.width = "200px";
-        img.style.height = "200px";
-        li.appendChild(img);
+        const li = document.createElement("li");
+        li.textContent = `名称：${place.name}`;
+        if (place.photos && place.photos.length > 0) {
+          const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
+          const img = document.createElement("img");
+          img.src = firstPhotoUrl;
+          img.style.width = "200px";
+          img.style.height = "200px";
+          li.appendChild(img);
+        }
+
+         // 住所を表示
+        if (place.formatted_address) {
+          const address = document.createElement("p");
+          address.textContent = place.formatted_address;
+          li.appendChild(address);
+        }
+
+        // 評価を表示
+        if (place.rating) {
+          const rating = document.createElement("p");
+          rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
+          li.appendChild(rating);
+        }
+
+
+        // 営業時間を表示
+        // 出来ない！！ 後からやるconsole.log(place.opening_hours)
+
+        if (place.current_opening_hours && place.opening_hours.weekday_text) {
+          const hours = document.createElement("p");
+          hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
+          li.appendChild(hours);
+        }
+
+        const goToDestination = document.createElement("a");
+        goToDestination.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`
+        goToDestination.target = "_blank";
+        goToDestination.textContent = "ここに行ってみる"
+        li.appendChild(goToDestination);
+
+        placesList.appendChild(li);
+
+        li.addEventListener("click", function() {
+          map.setCenter(location);
+        });
       }
-
-       // 住所を表示
-      if (place.formatted_address) {
-        const address = document.createElement("p");
-        address.textContent = place.formatted_address;
-        li.appendChild(address);
-      }
-
-      // 評価を表示
-      if (place.rating) {
-        const rating = document.createElement("p");
-        rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
-        li.appendChild(rating);
-      }
-
-      
-      // 営業時間を表示
-      // 出来ない！！ 後からやるconsole.log(place.opening_hours)
-
-      if (place.current_opening_hours && place.opening_hours.weekday_text) {
-        const hours = document.createElement("p");
-        hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
-        li.appendChild(hours);
-      }
-
-      const goToDestination = document.createElement("a");
-      goToDestination.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`
-      goToDestination.target = "_blank";
-      goToDestination.textContent = "ここに行ってみる"
-      li.appendChild(goToDestination);
-
-
-
-
-      placesList.appendChild(li);
-
-      li.addEventListener("click", function() {
-        map.setCenter(location);
-      });
     }
+  }else{
+    const no_results = document.createElement("p");
+    no_results.textContent = "検索条件に該当する候補地がありません";
+    li.appendChild(no_results);
   }
 }
 
