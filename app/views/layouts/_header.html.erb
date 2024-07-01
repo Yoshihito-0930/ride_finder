@@ -2,7 +2,7 @@
   <div class="navbar bg-base-300 ">
     <div class="flex-3 px-5 lg:flex-none">
       <%= link_to '/', class: "navbar-brand" do %>
-        <%= image_tag 'ride_finder_logo.png', size:'70x70' %>
+        <%= image_tag 'ride_finder_logo.png', size:'60x60' %>
       <% end %>
     </div> 
     <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
@@ -22,7 +22,7 @@
               <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
             </div>
             <div id="value-distance">
-              <%= form.label :value, "距離(m)：" %>
+              <%= form.label :value, "探す範囲(m)：" %>
               <%= form.select :value, [30000, 45000, 60000, 80000, 100000].map { |v| [v, v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
             </div>
             <div id="value-time" style="display:none;">
