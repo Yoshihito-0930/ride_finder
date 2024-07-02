@@ -87,7 +87,12 @@ function performNearbySearch(location) {
       break;
   }
 
-  const radius = "<%= @condition_value %>"
+  const radius = "<%= @condition_value %>" * 1000;
+
+  console.log(`Location: ${location.lat}, ${location.lng}`);
+  console.log(`Type Category: ${typeCategory}`);
+  console.log(`Text Category: ${textCategory}`);
+  console.log(`Radius: ${radius}`);
   
   if (typeCategory) {
     request = {
@@ -96,10 +101,13 @@ function performNearbySearch(location) {
       type: [typeCategory],
       language: 'ja'
     };
+    console.log(request);
     service.nearbySearch(request,
     function (results, status, pagination) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
-
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+        console.log("ここで止まっている",status)
+      return;
+}
       addPlaces(results, map);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -138,11 +146,12 @@ function performNearbySearch(location) {
         if (textCategory === "道の駅"){
           filteredResults = results.filter(result => {
             return result.name.includes('道の駅') && !result.name.includes('駐車場'); // 名前に '道の駅' を含む
-          }
-      )};
+          });
+      }
     }
 
-      addPlaces(filteredResults, map);
+    let sortedResults = sortResultsByDistance(filteredResults, location);
+      addPlaces(sortedResults, map);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
 
@@ -154,6 +163,15 @@ function performNearbySearch(location) {
       }
     });
   }
+}
+
+function sortResultsByDistance(results, userLocation) {
+  results.sort((a, b) => {
+    const distanceA = google.maps.geometry.spherical.computeDistanceBetween(userLocation, a.geometry.location);
+    const distanceB = google.maps.geometry.spherical.computeDistanceBetween(userLocation, b.geometry.location);
+    return distanceA - distanceB;
+  });
+  return results;
 }
 
 function addPlaces(places, map) {
@@ -240,4 +258,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places&callback=initMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
