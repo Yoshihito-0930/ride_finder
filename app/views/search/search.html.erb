@@ -133,7 +133,8 @@ function performNearbySearch(location) {
         filteredResults = "検索に該当する候補地がありません"
     }else{
         /*
-        let filteredResults = results.filter(place => {
+        調整中　検索範囲を何km〜何km以内で検索できるか
+        filteredResults = results.filter(place => {
           const distance = google.maps.geometry.spherical.computeDistanceBetween(
             location,
             place.geometry.location
@@ -145,7 +146,7 @@ function performNearbySearch(location) {
         
         if (textCategory === "道の駅"){
           filteredResults = results.filter(result => {
-            return result.name.includes('道の駅') && !result.name.includes('駐車場'); // 名前に '道の駅' を含む
+            return result.name.includes('道の駅') && !result.name.includes('駐車場') && !result.name.includes('ドッグラン')&& !result.name.includes('駐輪場')&& !result.name.includes('トイレ')&& !result.name.includes('レストラン')&& !result.name.includes('食堂')&& !result.name.includes('本店');
           });
       }
     }
@@ -233,11 +234,23 @@ function addPlaces(places, map) {
           li.appendChild(hours);
         }
 
-        const goToDestination = document.createElement("a");
-        goToDestination.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`
-        goToDestination.target = "_blank";
-        goToDestination.textContent = "ここに行ってみる"
-        li.appendChild(goToDestination);
+        const tollRoute = document.createElement("a");
+        tollRoute.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`;
+        tollRoute.target = "_blank";
+        tollRoute.textContent = "有料道路ありで行ってみる";
+        li.appendChild(tollRoute);
+        
+        const noTollsRoute = document.createElement("a");
+        noTollsRoute.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=tolls`;
+        noTollsRoute.target = "_blank";
+        noTollsRoute.textContent = "有料の高速道路のみを回避して行ってみる";
+        li.appendChild(noTollsRoute);
+        
+        const avoidAll = document.createElement("a");
+        avoidAll.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=tolls,highways`;
+        avoidAll.target = "_blank";
+        avoidAll.textContent = "有料&高速道路を回避して行ってみる";
+        li.appendChild(avoidAll);
 
         placesList.appendChild(li);
 
