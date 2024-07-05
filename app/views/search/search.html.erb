@@ -57,6 +57,26 @@ function initMap() {
   }
 }
 
+// 現在地を示す青丸のアイコンを作成 調整中
+function setCurrentLocationMaker(map, position){
+  new google.maps.Marker({
+      position: position,
+      map: map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: '#115EC3',
+        fillOpacity: 1,
+        strokeColor: 'white',
+        strokeWeight: 2,
+        scale: 7
+      },
+  });
+}
+
+// 現在地を示す青丸のアイコンを表示  調整中
+setCurrentLocationMaker(map, pos);
+
+
 function performNearbySearch(location) {
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
@@ -87,7 +107,25 @@ function performNearbySearch(location) {
       break;
   }
 
-  const radius = "<%= @condition_value %>" * 1000;
+  const condition = "<%= @condition %>"
+  let time;
+  let radius;
+
+  if (condition === "time") {
+    switch ("<%= @condition_value %>") {
+      case "1時間30分":
+        time = 90;
+        break;
+      case "60分":
+        time = 60;
+        break;
+      case "45分":
+        time = 45;
+        break;
+    }
+  }else{
+    radius = "<%= @condition_value %>" * 1000;
+  }
 
   console.log(`Location: ${location.lat}, ${location.lng}`);
   console.log(`Type Category: ${typeCategory}`);
@@ -107,7 +145,8 @@ function performNearbySearch(location) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
         console.log("ここで止まっている",status)
       return;
-}
+      }
+
       addPlaces(results, map);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -131,7 +170,7 @@ function performNearbySearch(location) {
       let filteredResults = results
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
         filteredResults = "検索に該当する候補地がありません"
-    }else{
+      }else{
         /*
         調整中　検索範囲を何km〜何km以内で検索できるか
         filteredResults = results.filter(place => {
@@ -175,6 +214,54 @@ function sortResultsByDistance(results, userLocation) {
   return results;
 }
 
+function getRoutes(destinationPosition) {
+  const directionsService = new google.maps.DirectionsService();
+  const origin = pos;  // ユーザーの現在地
+  const destination = destinationPosition; //'目的地の住所'
+
+  // 共通のリクエスト
+  const baseRequest = {
+    origin: origin,
+    destination: destination,
+    travelMode: 'DRIVING',
+  };
+
+  // 高速道路を避けるリクエスト
+  const avoidHighwaysRequest = {
+    ...baseRequest,
+    avoid: 'highways'
+  };
+
+  // 有料道路を避けるリクエスト
+  const avoidTollsRequest = {
+    ...baseRequest,
+    avoid: 'tolls'
+  };
+
+  // 回避なしリクエスト
+  const noAvoidRequest = {
+    ...baseRequest
+  };
+
+  // リクエストを実行
+  directionsService.route(avoidHighwaysRequest, handleDirectionsResult);
+  //directionsService.route(avoidTollsRequest, handleDirectionsResult);
+  //directionsService.route(noAvoidRequest, handleDirectionsResult);
+}
+  
+function handleDirectionsResult(response, status) {
+  if (status === 'OK') {
+    const route = response.routes[0];
+    const duration = route.legs[0].duration.text; // 秒単位の予想到着時間
+    const drivingTime = duration.replace("hours", "時間").replace("mins", "分")
+
+    console.log(`高速道路(有料道路有り)を使った場合の予想到着時間: ${drivingTime}`);
+    // ここでルートを地図に表示する処理を追加する
+  } else {
+    console.error('Directions request failed due to ' + status);
+  }
+}
+
 function addPlaces(places, map) {
   const placesList = document.getElementById("places");
   placesList.innerHTML = ""; // Clear previous results
@@ -191,6 +278,7 @@ function addPlaces(places, map) {
         };
 
         const location = place.geometry.location
+        getRoutes(location)
 
         new google.maps.Marker({
           map,
