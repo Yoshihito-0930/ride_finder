@@ -23,7 +23,7 @@
             </div>
             <div id="value-distance">
               <%= form.label :value, "探す範囲(km)：" %>
-              <%= form.select :value, [30, 45, 60, 80, 100].map { |v| [v, v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
+              <%= form.select :value, [30, 45, 60, 80, 100, 150].map { |v| [v, v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
             </div>
             <div id="value-time" style="display:none;">
               <%= form.label :value, "時間：" %>
