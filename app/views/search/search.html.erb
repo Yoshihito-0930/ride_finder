@@ -314,11 +314,11 @@ function addPlaces(places, map) {
           const li = document.createElement("li");
           li.textContent = `名称：${place.name}`;
           if (place.photos && place.photos.length > 0) {
-            const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
+            const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 });
             const img = document.createElement("img");
             img.src = firstPhotoUrl;
-            img.style.width = "200px";
-            img.style.height = "200px";
+            img.style.width = "400px";
+            img.style.height = "300px";
             li.appendChild(img);
           }
 
@@ -356,7 +356,7 @@ function addPlaces(places, map) {
             }
             routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
             routeLink.target = "_blank";
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: ${info.distance})`;
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.distance})`;
             li.appendChild(routeLink);
           });
 
