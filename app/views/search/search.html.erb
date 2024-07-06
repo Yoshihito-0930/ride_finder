@@ -15,6 +15,14 @@
 let map;
 let pos;
 
+let noAvoidDrinvingTime
+let avoidTollsDrinvingTime
+let avoidHighwaysDrinvingTime
+
+let noAvoidDrinvingDistance
+let avoidTollsDrinvingDistance
+let avoidHighwaysDrinvingDistance
+
 function initMap() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -77,6 +85,7 @@ function setCurrentLocationMaker(map, position){
 setCurrentLocationMaker(map, pos);
 
 
+
 function performNearbySearch(location) {
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
@@ -126,11 +135,6 @@ function performNearbySearch(location) {
   }else{
     radius = "<%= @condition_value %>" * 1000;
   }
-
-  console.log(`Location: ${location.lat}, ${location.lng}`);
-  console.log(`Type Category: ${typeCategory}`);
-  console.log(`Text Category: ${textCategory}`);
-  console.log(`Radius: ${radius}`);
   
   if (typeCategory) {
     request = {
@@ -139,7 +143,7 @@ function performNearbySearch(location) {
       type: [typeCategory],
       language: 'ja'
     };
-    console.log(request);
+
     service.nearbySearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
@@ -205,6 +209,7 @@ function performNearbySearch(location) {
   }
 }
 
+
 function sortResultsByDistance(results, userLocation) {
   results.sort((a, b) => {
     const distanceA = google.maps.geometry.spherical.computeDistanceBetween(userLocation, a.geometry.location);
@@ -214,145 +219,165 @@ function sortResultsByDistance(results, userLocation) {
   return results;
 }
 
-function getRoutes(destinationPosition) {
+
+function getRoutes(location, callback) {
   const directionsService = new google.maps.DirectionsService();
   const origin = pos;  // ユーザーの現在地
-  const destination = destinationPosition; //'目的地の住所'
+  const destination = location; //'目的地の住所'
 
   // 共通のリクエスト
   const baseRequest = {
     origin: origin,
     destination: destination,
     travelMode: 'DRIVING',
+    drivingOptions: {
+      departureTime: new Date(Date.now() + 5000),  // 現在の時刻だと適切に処理されない可能性があるため現在時刻の5秒後を指定
+      trafficModel: 'bestguess'
+    }
   };
 
-  // 高速道路を避けるリクエスト
+  // 高速道路を避けるリクエスト(一般道のみ)
   const avoidHighwaysRequest = {
     ...baseRequest,
-    avoid: 'highways'
+    avoidHighways: true,
+    avoidTolls: true
   };
 
-  // 有料道路を避けるリクエスト
+  // 有料道路を避けるリクエスト(高速無料区間は通る)
   const avoidTollsRequest = {
     ...baseRequest,
-    avoid: 'tolls'
+    avoidTolls: true
   };
 
-  // 回避なしリクエスト
+  // 有料、高速道路を回避なしリクエスト
   const noAvoidRequest = {
     ...baseRequest
   };
 
-  // リクエストを実行
-  directionsService.route(avoidHighwaysRequest, handleDirectionsResult);
-  //directionsService.route(avoidTollsRequest, handleDirectionsResult);
-  //directionsService.route(noAvoidRequest, handleDirectionsResult);
-}
-  
-function handleDirectionsResult(response, status) {
-  if (status === 'OK') {
-    const route = response.routes[0];
-    const duration = route.legs[0].duration.text; // 秒単位の予想到着時間
-    const drivingTime = duration.replace("hours", "時間").replace("mins", "分")
 
-    console.log(`高速道路(有料道路有り)を使った場合の予想到着時間: ${drivingTime}`);
-    // ここでルートを地図に表示する処理を追加する
-  } else {
-    console.error('Directions request failed due to ' + status);
-  }
+  const requests = [
+    { request: noAvoidRequest, type: 'noAvoid' },
+    { request: avoidTollsRequest, type: 'avoidTolls' },
+    { request: avoidHighwaysRequest, type: 'avoidHighways' }
+  ];
+
+  const promises = requests.map(({ request, type }) =>
+    new Promise((resolve, reject) => {
+      directionsService.route(request, (response, status) => {
+        if (status === 'OK') {
+          const route = response.routes[0];
+          let duration;
+          if (route.legs[0].duration_in_traffic) {
+            duration = route.legs[0].duration_in_traffic.text;
+          } else {
+            duration = route.legs[0].duration.text;
+          }
+          const drivingTime = duration.replace("hours", "時間").replace("mins", "分");
+          const distance = route.legs[0].distance.text;
+          resolve({ type, drivingTime, distance });
+        } else {
+          reject('Directions request failed due to ' + status);
+        }
+      });
+    })
+  );
+
+  return Promise.all(promises);
 }
 
 function addPlaces(places, map) {
   const placesList = document.getElementById("places");
-  placesList.innerHTML = ""; // Clear previous results
+  placesList.innerHTML = ""; // 前の結果をクリア
 
-  if (Array.isArray(places)){
-    for (const place of places) {
+  if (Array.isArray(places)) {
+    places.forEach(place => {
       if (place.geometry && place.geometry.location) {
-        const image = {
-          url: place.icon,
-          size: new google.maps.Size(71, 71),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(17, 34),
-          scaledSize: new google.maps.Size(25, 25),
+        const location = place.geometry.location;
+
+        // ルート情報が取得された後に実行するコールバック関数
+        const displayRouteInfo = (routeInfos) => {
+          const image = {
+            url: place.icon,
+            size: new google.maps.Size(71, 71),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25),
+          };
+
+          new google.maps.Marker({
+            map,
+            icon: image,
+            title: place.name,
+            position: location,
+          });
+
+          const li = document.createElement("li");
+          li.textContent = `名称：${place.name}`;
+          if (place.photos && place.photos.length > 0) {
+            const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
+            const img = document.createElement("img");
+            img.src = firstPhotoUrl;
+            img.style.width = "200px";
+            img.style.height = "200px";
+            li.appendChild(img);
+          }
+
+          // 住所を表示
+          if (place.formatted_address) {
+            const address = document.createElement("p");
+            address.textContent = place.formatted_address.replace("日本、", "" );
+            li.appendChild(address);
+          }
+
+          // 評価を表示
+          if (place.rating) {
+            const rating = document.createElement("p");
+            rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
+            li.appendChild(rating);
+          }
+
+          // 営業時間を表示
+          if (place.current_opening_hours && place.opening_hours.weekday_text) {
+            const hours = document.createElement("p");
+            hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
+            li.appendChild(hours);
+          }
+
+          
+
+          // ルート情報を表示
+          routeInfos.forEach(info => {
+            const routeLink = document.createElement("a");
+            let avoidParams = '';
+            if (info.type === 'avoidHighways') {
+              avoidParams = 'tolls,highways';
+            } else if (info.type === 'avoidTolls') {
+              avoidParams = 'tolls';
+            }
+            routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
+            routeLink.target = "_blank";
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: ${info.distance})`;
+            li.appendChild(routeLink);
+          });
+
+          placesList.appendChild(li);
+
+          li.addEventListener("click", function() {
+            map.setCenter(location);
+          });
         };
 
-        const location = place.geometry.location
-        getRoutes(location)
-
-        new google.maps.Marker({
-          map,
-          icon: image,
-          title: place.name,
-          position: location,
-        });
-
-        const li = document.createElement("li");
-        li.textContent = `名称：${place.name}`;
-        if (place.photos && place.photos.length > 0) {
-          const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 200, maxHeight: 200 });
-          const img = document.createElement("img");
-          img.src = firstPhotoUrl;
-          img.style.width = "200px";
-          img.style.height = "200px";
-          li.appendChild(img);
-        }
-
-         // 住所を表示
-        if (place.formatted_address) {
-          const address = document.createElement("p");
-          address.textContent = place.formatted_address;
-          li.appendChild(address);
-        }
-
-        // 評価を表示
-        if (place.rating) {
-          const rating = document.createElement("p");
-          rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
-          li.appendChild(rating);
-        }
-
-
-        // 営業時間を表示
-        // 出来ない！！ 後からやるconsole.log(place.opening_hours)
-
-        if (place.current_opening_hours && place.opening_hours.weekday_text) {
-          const hours = document.createElement("p");
-          hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
-          li.appendChild(hours);
-        }
-
-        const tollRoute = document.createElement("a");
-        tollRoute.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving`;
-        tollRoute.target = "_blank";
-        tollRoute.textContent = "有料道路ありで行ってみる";
-        li.appendChild(tollRoute);
-        
-        const noTollsRoute = document.createElement("a");
-        noTollsRoute.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=tolls`;
-        noTollsRoute.target = "_blank";
-        noTollsRoute.textContent = "有料の高速道路のみを回避して行ってみる";
-        li.appendChild(noTollsRoute);
-        
-        const avoidAll = document.createElement("a");
-        avoidAll.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=tolls,highways`;
-        avoidAll.target = "_blank";
-        avoidAll.textContent = "有料&高速道路を回避して行ってみる";
-        li.appendChild(avoidAll);
-
-        placesList.appendChild(li);
-
-        li.addEventListener("click", function() {
-          map.setCenter(location);
-        });
+        // getRoutes関数を呼び出し、ルート情報が取得された後にdisplayRouteInfo関数を実行
+        getRoutes(location).then(displayRouteInfo).catch(error => console.error(error));
       }
-    }
-  }else{
+    });
+  } else {
     const no_results = document.createElement("p");
     no_results.textContent = "検索条件に該当する候補地がありません";
-    li.appendChild(no_results);
+    placesList.appendChild(no_results);
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', function() {
   initMap();
