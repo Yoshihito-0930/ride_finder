@@ -15,14 +15,6 @@
 let map;
 let pos;
 
-let noAvoidDrinvingTime
-let avoidTollsDrinvingTime
-let avoidHighwaysDrinvingTime
-
-let noAvoidDrinvingDistance
-let avoidTollsDrinvingDistance
-let avoidHighwaysDrinvingDistance
-
 function initMap() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -104,6 +96,7 @@ function performNearbySearch(location) {
   let typeCategory
   let textCategory
 
+  // nearbySearchでtypeが無いものはtextSearchを使う
   switch("<%= @category %>"){
     case "tourist_attraction":
       typeCategory = "<%= @category %>";
@@ -113,6 +106,12 @@ function performNearbySearch(location) {
       break;
     case "roadside_station":
       textCategory = "道の駅";
+      break;
+    case "campground":
+      typeCategory = "<%= @category %>";
+      break;
+    case "viewpoint":
+      textCategory = "展望所";
       break;
   }
 
