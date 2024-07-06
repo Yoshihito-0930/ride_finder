@@ -28,6 +28,8 @@ gem 'gemini-ai', '~> 4.1.0'
 
 gem 'whenever'
 
+gem 'httparty'
+
 gem 'rails-i18n'
 gem 'ransack'
 

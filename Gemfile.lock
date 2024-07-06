@@ -346,6 +346,7 @@ DEPENDENCIES
   gemini-ai (~> 4.1.0)
   geocoder
   google_places
+  httparty
   jbuilder
   jsbundling-rails
   omniauth
