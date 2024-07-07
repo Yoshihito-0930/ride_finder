@@ -14,6 +14,7 @@
 <script>
 let map;
 let pos;
+let currentInfoWindow = null;
 
 function initMap() {
   if (navigator.geolocation) {
@@ -295,17 +296,8 @@ function addPlaces(places, map) {
 
         // ルート情報が取得された後に実行するコールバック関数
         const displayRouteInfo = (routeInfos) => {
-          const image = {
-            url: place.icon,
-            size: new google.maps.Size(71, 71),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(17, 34),
-            scaledSize: new google.maps.Size(25, 25),
-          };
-
-          new google.maps.Marker({
+          const marker = new google.maps.Marker({
             map,
-            icon: image,
             title: place.name,
             position: location,
           });
@@ -363,6 +355,14 @@ function addPlaces(places, map) {
 
           li.addEventListener("click", function() {
             map.setCenter(location);
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: place.name,
+          });
+
+          marker.addListener('click', function() {
+            infoWindow.open(map, marker);
           });
         };
 
