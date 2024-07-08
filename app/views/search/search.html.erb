@@ -1,3 +1,7 @@
+<% content_for :additional_stylesheets do %>
+  <%= stylesheet_link_tag "search", media: "all", "data-turbo-track": "reload" %>
+<% end %>
+
 <div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 600px;"></div>
@@ -13,36 +17,30 @@
 
 <script>
 let map;
-let pos;
+let currentLocation;
 let currentInfoWindow = null;
 
 function initMap() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {
-        pos = {
+        currentLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
         map = new google.maps.Map(
           document.getElementById("map"),
           {
-            center: pos,
+            center: currentLocation,
             zoom: 12,
+            fullscreenControl: false,
+            streetViewControl: false,
+            keyboardShortcuts: false,
+            mapTypeControl: true,
           }
         );
-        performNearbySearch(pos);
-      },
-      function() {
-        const defaultLocation = { lat: 35.6803997, lng: 139.7690174 };
-        map = new google.maps.Map(
-          document.getElementById("map"),
-          {
-            center: defaultLocation,
-            zoom: 10,
-          }
-        );
-        performNearbySearch(defaultLocation);
+        
+        performNearbySearch(currentLocation);
       }
     );
   } else {
@@ -75,11 +73,11 @@ function setCurrentLocationMaker(map, position){
 }
 
 // 現在地を示す青丸のアイコンを表示  調整中
-setCurrentLocationMaker(map, pos);
+setCurrentLocationMaker(map, currentLocation);
 
 
 
-function performNearbySearch(location) {
+function performNearbySearch(currentLocation) {
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
   const moreButton = document.getElementById("more");
@@ -138,7 +136,7 @@ function performNearbySearch(location) {
   
   if (typeCategory) {
     request = {
-      location: pos,
+      location: currentLocation,
       radius: radius,
       type: [typeCategory],
       language: 'ja'
@@ -164,7 +162,7 @@ function performNearbySearch(location) {
     });
   } else if(textCategory){
     request = {
-      location: pos,
+      location: currentLocation,
       radius: radius,
       query: textCategory,
       language: 'ja'
@@ -222,7 +220,7 @@ function sortResultsByDistance(results, userLocation) {
 
 function getRoutes(location, callback) {
   const directionsService = new google.maps.DirectionsService();
-  const origin = pos;  // ユーザーの現在地
+  const origin = currentLocation;  // ユーザーの現在地
   const destination = location; //'目的地の住所'
 
   // 共通のリクエスト
@@ -302,6 +300,18 @@ function addPlaces(places, map) {
             position: location,
           });
 
+          const infoWindow = new google.maps.InfoWindow({
+            content: place.name
+          });
+  
+          marker.addListener('click', function() {
+            if (currentInfoWindow) {
+              currentInfoWindow.close();
+            }
+            infoWindow.open(map, marker);
+            currentInfoWindow = infoWindow;
+          });
+
           const li = document.createElement("li");
           li.textContent = `名称：${place.name}`;
           if (place.photos && place.photos.length > 0) {
@@ -355,14 +365,6 @@ function addPlaces(places, map) {
 
           li.addEventListener("click", function() {
             map.setCenter(location);
-          });
-
-          const infoWindow = new google.maps.InfoWindow({
-            content: place.name,
-          });
-
-          marker.addListener('click', function() {
-            infoWindow.open(map, marker);
           });
         };
 
