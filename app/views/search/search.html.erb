@@ -4,7 +4,7 @@
 
 <div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
-<div id="map" style="height: 400px; width: 600px;"></div>
+<div id="map" style="height: 400px; width: 700px;"></div>
   <div id="map"></div>
   <!--<div id="sidebar">-->
     <h2 class="text-lg">検索結果</h2>
@@ -39,7 +39,8 @@ function initMap() {
             mapTypeControl: true,
           }
         );
-        
+        // 現在地を示す青丸のアイコンを表示  調整中
+        setCurrentLocationMaker(map, currentLocation);
         performNearbySearch(currentLocation);
       }
     );
@@ -57,9 +58,9 @@ function initMap() {
 }
 
 // 現在地を示す青丸のアイコンを作成 調整中
-function setCurrentLocationMaker(map, position){
+function setCurrentLocationMaker(map, currentLocation){
   new google.maps.Marker({
-      position: position,
+      position: currentLocation,
       map: map,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
@@ -71,9 +72,6 @@ function setCurrentLocationMaker(map, position){
       },
   });
 }
-
-// 現在地を示す青丸のアイコンを表示  調整中
-setCurrentLocationMaker(map, currentLocation);
 
 
 
