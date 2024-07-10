@@ -21,31 +21,6 @@
     <%= render 'shared/flash_message' %>
     <%= yield %>
     <%= render "layouts/footer" %>
-    <script>
-  function showModal() {
-    const modal = document.getElementById('my_modal_2');
-    modal.showModal();
-
-    // 調整中　モーダルが表示された後にイベントリスナーを追加
-    const conditionSelect = document.getElementById('condition-select');
-    const valueDistance = document.getElementById('value-distance');
-    const valueTime = document.getElementById('value-time');
-
-    if (conditionSelect) {
-      conditionSelect.addEventListener('change', function() {
-        if (this.value === 'distance') {
-          valueDistance.style.display = 'block';
-          valueTime.style.display = 'none';
-        } else if (this.value === 'time') {
-          valueDistance.style.display = 'none';
-          valueTime.style.display = 'block';
-        } else {
-          valueDistance.style.display = 'none';
-          valueTime.style.display = 'none';
-        }
-      });
-    }
-  }
-
+    
   </body>
 </html>

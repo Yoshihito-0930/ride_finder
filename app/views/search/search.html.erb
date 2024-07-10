@@ -5,7 +5,6 @@
 <div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 700px;"></div>
-  <div id="map"></div>
   <!--<div id="sidebar">-->
     <h2 class="text-lg">検索結果</h2>
     <ul id="places">
@@ -19,8 +18,12 @@
 let map;
 let currentLocation;
 let currentInfoWindow = null;
+let mapInitialized = false;
 
 function initMap() {
+  if (mapInitialized) {
+    return; // 既に初期化済みなら何もしない
+  }
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {
@@ -39,11 +42,13 @@ function initMap() {
             mapTypeControl: true,
           }
         );
-        // 現在地を示す青丸のアイコンを表示  調整中
+        // 現在地を示す青丸のアイコンを表示
         setCurrentLocationMaker(map, currentLocation);
+        console.log("initMap: performNearbySearchを呼び出し");
         performNearbySearch(currentLocation);
       }
     );
+    mapInitialized = true;
   } else {
     const defaultLocation = { lat: 35.6803997, lng: 139.7690174 };
     map = new google.maps.Map(
@@ -53,7 +58,9 @@ function initMap() {
         zoom: 10,
       }
     );
-    performNearbySearch(defaultLocation);
+    const failedToGetCurrentLocation = true;
+    addPlaces(failedToGetCurrentLocation, defaultLocation);
+    mapInitialized = true;
   }
 }
 
@@ -73,9 +80,8 @@ function setCurrentLocationMaker(map, currentLocation){
   });
 }
 
-
-
 function performNearbySearch(currentLocation) {
+  console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
   const moreButton = document.getElementById("more");
@@ -132,6 +138,9 @@ function performNearbySearch(currentLocation) {
     radius = "<%= @condition_value %>" * 1000;
   }
   
+  console.log(typeCategory)
+  console.log(textCategory)
+
   if (typeCategory) {
     request = {
       location: currentLocation,
@@ -146,7 +155,10 @@ function performNearbySearch(currentLocation) {
         console.log("ここで止まっている",status)
       return;
       }
-
+      console.log("nearbySearch実行中")
+      results.forEach(result => {
+        console.log(result.name);
+      });
       addPlaces(results, map);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -157,6 +169,7 @@ function performNearbySearch(currentLocation) {
           };
         }
       }
+      console.log("NearbySearch終了");
     });
   } else if(textCategory){
     request = {
@@ -166,43 +179,38 @@ function performNearbySearch(currentLocation) {
       language: 'ja'
     };
     service.textSearch(request,
-    function (results, status, pagination) {
-      let filteredResults = results
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-        filteredResults = "検索に該当する候補地がありません"
-      }else{
-        /*
-        調整中　検索範囲を何km〜何km以内で検索できるか
-        filteredResults = results.filter(place => {
-          const distance = google.maps.geometry.spherical.computeDistanceBetween(
-            location,
-            place.geometry.location
-          );
-          return distance <= radius; 
-          // return distance >= 30000 && distance <= 50000;  // 30km以上50km以内
-        } 
-        */
-        
-        if (textCategory === "道の駅"){
-          filteredResults = results.filter(result => {
-            return result.name.includes('道の駅') && !result.name.includes('駐車場') && !result.name.includes('ドッグラン')&& !result.name.includes('駐輪場')&& !result.name.includes('トイレ')&& !result.name.includes('レストラン')&& !result.name.includes('食堂')&& !result.name.includes('本店');
-          });
-      }
-    }
-
-    let sortedResults = sortResultsByDistance(filteredResults, location);
-      addPlaces(sortedResults, map);
-      if (moreButton) {
-        moreButton.disabled = !pagination || !pagination.hasNextPage;
-
-        if (pagination && pagination.hasNextPage) {
-          getNextPage = function () {
-            pagination.nextPage();
-          };
+      function (results, status, pagination) {
+        let filteredResults
+        console.log("textSearch開始");
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+          filteredResults = "検索に該当する候補地がありません"
+        }else{
+          if (textCategory === "道の駅"){
+            filteredResults = results.filter(result => {
+              return result.name.includes('道の駅') && !result.name.includes('駐車場') && !result.name.includes('ドッグラン')&& !result.name.includes('駐輪場')&& !result.name.includes('トイレ')&& !result.name.includes('レストラン')&& !result.name.includes('食堂')&& !result.name.includes('本店');
+            });
+          }else {
+            filteredResults = results;
+          }
         }
+        filteredResults.forEach(result => {
+          console.log(result.name);
+        });
+        addPlaces(filteredResults, map);
+        if (moreButton) {
+          moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+          if (pagination && pagination.hasNextPage) {
+            getNextPage = function () {
+              pagination.nextPage();
+            };
+          }
+        }
+        console.log("textSearch終了");
       }
-    });
+    );
   }
+  console.log("performNearbySearch: 終了");
 }
 
 
@@ -342,8 +350,6 @@ function addPlaces(places, map) {
             li.appendChild(hours);
           }
 
-          
-
           // ルート情報を表示
           routeInfos.forEach(info => {
             const routeLink = document.createElement("a");
@@ -372,7 +378,11 @@ function addPlaces(places, map) {
     });
   } else {
     const no_results = document.createElement("p");
-    no_results.textContent = "検索条件に該当する候補地がありません";
+    if(places){
+      no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい"
+    }else{
+       no_results.textContent = "検索条件に該当する候補地がありません";
+    }
     placesList.appendChild(no_results);
   }
 }
