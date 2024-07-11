@@ -18,11 +18,59 @@
 let map;
 let currentLocation;
 let currentInfoWindow = null;
-let mapInitialized = false;
+let mapInitialized = false; //initMap関数が1度だけ実行されるか確認する
+
+let typeCategory
+let textCategory
+
+// nearbySearchでtypeが無いものはtextSearchを使う
+switch("<%= @category %>"){
+  case "tourist_attraction":
+    typeCategory = "<%= @category %>";
+    break;
+  case "scenic_spot":
+    textCategory = "景勝地";
+    break;
+  case "roadside_station":
+    textCategory = "道の駅";
+    break;
+  case "campground":
+    typeCategory = "<%= @category %>";
+    break;
+  case "viewpoint":
+    textCategory = "展望所";
+    break;
+}
+
+const condition = "<%= @condition %>"
+let timeLimit;
+let radius; // timeLimitを使う場合にデフォルト値として使う
+
+if (condition === "time") {
+  switch ("<%= @condition_value %>") {
+    case "60":
+      timeLimit = 60;
+      radius = 100 * 1000; // 1時間で100km
+      break;
+    case "45":
+      timeLimit = 45;
+      radius = 75 * 1000; // 45分で75km
+      break;
+    case "30":
+      timeLimit = 30;
+      radius = 50 * 1000; // 30分で50km
+      break;
+    default:
+      radius = 150 * 1000; // 初期値として1時間半で150km
+      break;
+  }
+}else{
+  radius = "<%= @condition_value %>" * 1000;
+}
 
 function initMap() {
   if (mapInitialized) {
-    return; // 既に初期化済みなら何もしない
+    return;
   }
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -45,7 +93,7 @@ function initMap() {
         // 現在地を示す青丸のアイコンを表示
         setCurrentLocationMaker(map, currentLocation);
         console.log("initMap: performNearbySearchを呼び出し");
-        performNearbySearch(currentLocation);
+        performNearbySearch(currentLocation, timeLimit);
       }
     );
     mapInitialized = true;
@@ -59,7 +107,7 @@ function initMap() {
       }
     );
     const failedToGetCurrentLocation = true;
-    addPlaces(failedToGetCurrentLocation, defaultLocation);
+    addPlaces(failedToGetCurrentLocation, defaultLocation, timeLimit);
     mapInitialized = true;
   }
 }
@@ -96,48 +144,9 @@ function performNearbySearch(currentLocation) {
   }
 
   let request
-  let typeCategory
-  let textCategory
-
-  // nearbySearchでtypeが無いものはtextSearchを使う
-  switch("<%= @category %>"){
-    case "tourist_attraction":
-      typeCategory = "<%= @category %>";
-      break;
-    case "scenic_spot":
-      textCategory = "景勝地";
-      break;
-    case "roadside_station":
-      textCategory = "道の駅";
-      break;
-    case "campground":
-      typeCategory = "<%= @category %>";
-      break;
-    case "viewpoint":
-      textCategory = "展望所";
-      break;
-  }
-
-  const condition = "<%= @condition %>"
-  let time;
-  let radius;
-
-  if (condition === "time") {
-    switch ("<%= @condition_value %>") {
-      case "1時間30分":
-        time = 90;
-        break;
-      case "60分":
-        time = 60;
-        break;
-      case "45分":
-        time = 45;
-        break;
-    }
-  }else{
-    radius = "<%= @condition_value %>" * 1000;
-  }
   
+  console.log(condition)
+  console.log(timeLimit)
   console.log(typeCategory)
   console.log(textCategory)
 
@@ -159,7 +168,7 @@ function performNearbySearch(currentLocation) {
       results.forEach(result => {
         console.log(result.name);
       });
-      addPlaces(results, map);
+      addPlaces(results, map, timeLimit);
       if (moreButton) {
         moreButton.disabled = !pagination || !pagination.hasNextPage;
 
@@ -214,6 +223,7 @@ function performNearbySearch(currentLocation) {
 }
 
 
+// 調整中 距離を使ったソート機能 これ使わないかも
 function sortResultsByDistance(results, userLocation) {
   results.sort((a, b) => {
     const distanceA = google.maps.geometry.spherical.computeDistanceBetween(userLocation, a.geometry.location);
@@ -271,14 +281,18 @@ function getRoutes(location, callback) {
         if (status === 'OK') {
           const route = response.routes[0];
           let duration;
+          let durationSeconds;
           if (route.legs[0].duration_in_traffic) {
             duration = route.legs[0].duration_in_traffic.text;
+            durationSeconds = route.legs[0].duration.value;
           } else {
             duration = route.legs[0].duration.text;
+            durationSeconds = route.legs[0].duration.value;
           }
+          const drivingMinutes = Math.ceil(durationSeconds / 60);
           const drivingTime = duration.replace("hours", "時間").replace("mins", "分");
           const distance = route.legs[0].distance.text;
-          resolve({ type, drivingTime, distance });
+          resolve({ type, drivingTime, distance, drivingMinutes });
         } else {
           reject('Directions request failed due to ' + status);
         }
@@ -299,12 +313,25 @@ function addPlaces(places, map) {
         const location = place.geometry.location;
 
         // ルート情報が取得された後に実行するコールバック関数
-        const displayRouteInfo = (routeInfos) => {
+        // const displayRouteInfo = (routeInfos) => {
+
+        getRoutes(location).then(routeInfos => {
+          const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
+          const drivingMinutes = noAvoidRoute.drivingMinutes;
+
+          console.log(`${place.name}のdrivingMinutesは${drivingMinutes}`)
+
+
+          // 時間条件がある場合のみチェック
+          if (timeLimit && drivingMinutes > timeLimit) {
+            return;
+          }
+
           const marker = new google.maps.Marker({
-            map,
-            title: place.name,
-            position: location,
-          });
+          map,
+          title: place.name,
+          position: location,
+        });
 
           const infoWindow = new google.maps.InfoWindow({
             content: place.name
@@ -370,27 +397,20 @@ function addPlaces(places, map) {
           li.addEventListener("click", function() {
             map.setCenter(location);
           });
-        };
-
-        // getRoutes関数を呼び出し、ルート情報が取得された後にdisplayRouteInfo関数を実行
-        getRoutes(location).then(displayRouteInfo).catch(error => console.error(error));
-      }
-    });
-  } else {
-    const no_results = document.createElement("p");
-    if(places){
-      no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい"
+        }).catch(error => console.error(error));
+        }
+      });
     }else{
-       no_results.textContent = "検索条件に該当する候補地がありません";
+      const no_results = document.createElement("p");
+      if(places){
+        no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい"
+      }else{
+         no_results.textContent = "検索条件に該当する候補地がありません";
+      }
+      placesList.appendChild(no_results);
     }
-    placesList.appendChild(no_results);
-  }
 }
 
-
-document.addEventListener('DOMContentLoaded', function() {
-  initMap();
-});
 
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
