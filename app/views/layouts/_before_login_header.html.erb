@@ -11,28 +11,29 @@
         <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
         <p class="py-4"></p>
         <div>
-          <%= form_with url: search_results_path, method: :get, local: true do |form| %>
-            <div>
-              <%= form.label :category, "カテゴリー", class:"hidden" %>
-              <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, {}, {class: "select select-bordered select-sm  w-full max-w-xs"} %>
-            </div>
-            <h3 class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</h3>
-            <div>
-              <%= form.label :condition, "条件", class:"hidden" %>
-              <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
-            </div>
-            <div id="value-distance">
-              <p>現在地から何km以内のツーリングスポットを探すか選択して下さい</p>
-              <%= form.label :value, "探す範囲(km)", class:"hidden" %>
-              <%= form.select :value, [30, 45, 60, 80, 100, 150].map { |v| ["#{v}km", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
-            </div>
-            <div id="value-time" style="display:none;">
-              <p>現在地から何分以内のツーリングスポットを探すか選択して下さい(有料道路込みの時間で計算されます)</p>
-              <%= form.label :value, "時間：",class:"hidden" %>
-              <%= form.select :value, [30, 45, 60].map { |v| ["#{v}分", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
-            </div>
-            <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
-          <% end %>
+        <%= form_with url: search_results_path, method: :get, local: true do |form| %>
+          <div>
+            <%= form.label :category, "カテゴリー", class:"hidden" %>
+            <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, {}, {class: "select select-bordered select-sm  w-full max-w-xs"} %>
+          </div>
+          <p class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</p>
+          <div>
+            <%= form.label :condition, "条件", class:"hidden" %>
+            <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
+          </div>
+          
+          <div id="value-distance">
+            <p>現在地から何km以内のツーリングスポットを探すか選択して下さい</p>
+            <%= form.label :distance_value, "探す範囲(km)", class:"hidden" %>
+            <%= form.select :distance_value, [30, 45, 60, 80, 100, 150].map { |v| ["#{v}km", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
+          </div>
+          <div id="value-time" style="display:none;">
+            <p>現在地からおおよそ何分以内のツーリングスポットを探すか選択して下さい(有料道路込みの時間で計算されます)</p>
+            <%= form.label :time_value, "時間：",class:"hidden" %>
+            <%= form.select :time_value, [30, 45, 60].map { |v| ["#{v}分", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
+          </div>
+          <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
+        <% end %>
         </div>
       </div>
       <form method="dialog" class="modal-backdrop">
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const valueDistance = document.getElementById('value-distance');
   const valueTime = document.getElementById('value-time');
 
-  conditionSelect.addEventListener('change', function() {
+  function toggleValueFields() {
     if (conditionSelect.value === 'distance') {
       valueDistance.style.display = 'block';
       valueTime.style.display = 'none';
@@ -61,6 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
       valueDistance.style.display = 'none';
       valueTime.style.display = 'block';
     }
-  });
+  }
+
+  conditionSelect.addEventListener('change', toggleValueFields);
+  toggleValueFields(); // 初期表示のために呼び出し
 });
 </script>
