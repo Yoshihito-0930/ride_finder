@@ -22,6 +22,7 @@ let mapInitialized = false; //initMap関数が1度だけ実行されるか確認
 
 let typeCategory
 let textCategory
+let checkConditionDistance = false;
 
 // nearbySearchでtypeが無いものはtextSearchを使う
 switch("<%= @category %>"){
@@ -67,8 +68,10 @@ if (condition === "time") {
   }
 }else{
   radius = "<%= @condition_value %>" * 1000;
+  checkConditionDistance = true;
 }
-
+console.log("<%= @condition_value %>")
+console.log(radius)
 function initMap() {
   if (mapInitialized) {
     return;
@@ -292,8 +295,9 @@ function getRoutes(location, callback) {
           }
           const drivingMinutes = Math.ceil(durationSeconds / 60);
           const drivingTime = duration.replace("hours", "時間").replace("mins", "分");
-          const distance = route.legs[0].distance.text;
-          resolve({ type, drivingTime, distance, drivingMinutes });
+          const textDistance = route.legs[0].distance.text; // 距離をstring型でkmで取得
+          const numberDistance = route.legs[0].distance.value; // 距離をメートルで取得
+          resolve({ type, drivingTime, textDistance, numberDistance, drivingMinutes });
         } else {
           reject('Directions request failed due to ' + status);
         }
@@ -319,13 +323,15 @@ function addPlaces(places, map) {
         getRoutes(location).then(routeInfos => {
           const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
           const drivingMinutes = noAvoidRoute.drivingMinutes;
+          const numberDistance = noAvoidRoute.numberDistance;
 
           console.log(`timeLimitは${timeLimit}で${place.name}のdrivingMinutesは${drivingMinutes}`)
 
-
-          // 時間条件がある場合のみチェック
+          console.log(checkConditionDistance, `numberDistanceは${numberDistance}でradiusは${radius}`)
           if (timeLimit && drivingMinutes > timeLimit) {
             return;
+          }else if(checkConditionDistance && numberDistance > radius){
+            return
           }
 
           const marker = new google.maps.Marker({
@@ -389,7 +395,7 @@ function addPlaces(places, map) {
             }
             routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
             routeLink.target = "_blank";
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.distance})`;
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
             li.appendChild(routeLink);
           });
 
