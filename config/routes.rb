@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   get 'login', to: 'sessions#new'
   get 'auth/:provider/callback', to: 'sessions#create'
-  get 'auth/failure', to: redirect('/')
+  get 'auth/failure', to: 'sessions#failure'
   get 'logout', to: 'sessions#destroy'
   
   # get 'search_results', to: 'search_results#index'
@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   
   # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
+  resources :safety_tips, only: %i[index]
 end
