@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  root 'staticpages#top'
-  get 'contact', to: 'staticpages#contact'
-  get 'privacy_policy', to: 'staticpages#privacy_policy'
+  root 'static_pages#top'
+  get 'contact', to: 'static_pages#contact'
+  get 'privacy_policy', to: 'static_pages#privacy_policy'
 
-  get 'terms_of_service', to: 'staticpages#terms_of_service'
+  get 'terms_of_service', to: 'static_pages#terms_of_service'
 
   get 'login', to: 'sessions#new'
   get 'auth/:provider/callback', to: 'sessions#create'
