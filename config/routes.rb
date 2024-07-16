@@ -18,4 +18,5 @@ Rails.application.routes.draw do
   # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
+  resources :destinations, only: %i[show]
 end
