@@ -14,7 +14,7 @@
 </div>
 </div>
 
-<!-- <%= link_to "詳細画面へ", destination_path(@destination) %> -->
+
 
 <script>
 let map;
@@ -111,11 +111,10 @@ function initMap() {
             zoom: 10,
           }
         );
-        const failedToGetCurrentLocation = true;
+        const failedToGetCurrentLocation = false;
         addPlaces(failedToGetCurrentLocation, map);
         mapInitialized = true;
       }
-    );
     );
     mapInitialized = true;
   } else { // Geolocation APIをサポートしていないブラウザの処理
@@ -428,14 +427,25 @@ function addPlaces(places, map) {
   }else{
     console.log("addPlaces elseになっている")
     const no_results = document.createElement("p");
+    const chromeLocationInformationSettingLink = document.createElement("a");
+    const safariLocationInformationSettingLink = document.createElement("a");
     if(places){
-      no_results.textContent = "検索条件に該当する候補地がありません";
       console.log("placesはtrue")
+      no_results.textContent = "検索条件に該当する候補地がありません";
+      placesList.appendChild(no_results);
     }else{
-       no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい";
-       console.log("placesはfalse")
+      console.log("placesはfalse")
+      no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい";
+      chromeLocationInformationSettingLink.href = 
+      chromeLocationInformationSettingLink.target = "_blank";
+      chromeLocationInformationSettingLink.textContent = 
+      safariLocationInformationSettingLink.href = 
+      safariLocationInformationSettingLink.target = "_blank";
+      safariLocationInformationSettingLink.textContent = 
+      placesList.appendChild(no_results);
+      placesList.appendChild(chromeLocationInformationSettingLink);
+      placesList.appendChild(safariLocationInformationSettingLink);
     }
-    placesList.appendChild(no_results);
   }
 }
 
