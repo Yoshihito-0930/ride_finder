@@ -426,6 +426,7 @@ function addPlaces(places, map) {
       });
   }else{
     console.log("addPlaces elseになっている")
+    const li = document.createElement("li");
     const no_results = document.createElement("p");
     const chromeLocationInformationSettingLink = document.createElement("a");
     const safariLocationInformationSettingLink = document.createElement("a");
@@ -435,16 +436,17 @@ function addPlaces(places, map) {
       placesList.appendChild(no_results);
     }else{
       console.log("placesはfalse")
-      no_results.textContent = "現在地が取得できませんできた。現在地の取得を許可して下さい";
-      chromeLocationInformationSettingLink.href = 
+      no_results.textContent = "現在地が取得できませんでした。お使いのブラウザの位置情報の取得を許可して下さい";
+      chromeLocationInformationSettingLink.href = "https://support.google.com/chrome/answer/142065?hl=ja&co=GENIE.Platform%3DiOS&oco=1"
       chromeLocationInformationSettingLink.target = "_blank";
-      chromeLocationInformationSettingLink.textContent = 
-      safariLocationInformationSettingLink.href = 
+      chromeLocationInformationSettingLink.textContent = "Google Chromeを使われている方"
+      safariLocationInformationSettingLink.href = "https://ssl.help.tsite.jp/faq/show/59512?site_domain=qa-tsite"
       safariLocationInformationSettingLink.target = "_blank";
-      safariLocationInformationSettingLink.textContent = 
+      safariLocationInformationSettingLink.textContent = "safariを使われている方"
       placesList.appendChild(no_results);
-      placesList.appendChild(chromeLocationInformationSettingLink);
-      placesList.appendChild(safariLocationInformationSettingLink);
+      li.appendChild(chromeLocationInformationSettingLink);
+      li.appendChild(safariLocationInformationSettingLink);
+      placesList.appendChild(li);
     }
   }
 }
