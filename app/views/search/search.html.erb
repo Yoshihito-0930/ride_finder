@@ -5,14 +5,21 @@
 <div class="bg-base-200 menu items-center">
 <!-- マップを表示する要素 -->
 <div id="map" style="height: 400px; width: 700px;"></div>
-  <!--<div id="sidebar">-->
-    <h2 class="text-lg">検索結果</h2>
+  <h2 class="text-lg">検索結果</h2>
     <ul id="places">
     </ul>
-    <button class="btn" id="more">もっと見る</button>
   </div>
 </div>
 </div>
+
+<dialog id="desitination-modal" class="modal">
+  <div class="modal-box sm:w-[500px]">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <div class="post_show mt-4"></div>
+  </div>
+</dialog>
 
 
 
@@ -48,6 +55,7 @@ switch("<%= @category %>"){
     break;
 }
 
+console.log("<%= @category %>")
 const condition = "<%= @condition %>"
 let timeLimit;
 let radius; // timeLimitを使う場合にデフォルト値として使う
@@ -332,13 +340,13 @@ function addPlaces(places, map) {
   const placesList = document.getElementById("places");
   placesList.innerHTML = ""; // 前の結果をクリア
 
-  if (Array.isArray(places)&& places.length === 0) {
+  console.log(`addPlacesのplacesは${places}`)
+  if (Array.isArray(places)&& places.length !== 0) {
     places.forEach(place => {
       if (place.geometry && place.geometry.location) {
         const location = place.geometry.location;
 
         // ルート情報が取得された後に実行するコールバック関数
-        // const displayRouteInfo = (routeInfos) => {
 
         getRoutes(location).then(routeInfos => {
           const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
