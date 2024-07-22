@@ -340,7 +340,6 @@ function addPlaces(places, map) {
   const placesList = document.getElementById("places");
   placesList.innerHTML = ""; // 前の結果をクリア
 
-  console.log(`addPlacesのplacesは${places}`)
   if (Array.isArray(places)&& places.length !== 0) {
     places.forEach(place => {
       if (place.geometry && place.geometry.location) {
@@ -381,7 +380,7 @@ function addPlaces(places, map) {
           });
 
           const li = document.createElement("li");
-          li.textContent = `名称：${place.name}`;
+          li.textContent = place.name;
           if (place.photos && place.photos.length > 0) {
             const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 });
             const img = document.createElement("img");
@@ -406,10 +405,11 @@ function addPlaces(places, map) {
           }
 
           // 営業時間を表示
-          if (place.current_opening_hours && place.opening_hours.weekday_text) {
-            const hours = document.createElement("p");
-            hours.textContent = `営業時間: ${place.current_opening_hours.weekday_text.join(", ")}`;
-            li.appendChild(hours);
+          console.log(`営業時間は${place.opening_hours.weekday_text}`)
+          if (place.opening_hours.weekday_text) {
+            const weekdayBusinessHours = document.createElement("p");
+            hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
+            li.appendChild(businessHours);
           }
 
           // ルート情報を表示

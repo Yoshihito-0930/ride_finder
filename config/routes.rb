@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   
   # get 'search_results', to: 'search_results#index'
   get 'search', to: 'search#index'
-  get 'search/results', to: 'search#search'
+  get 'searchs/result', to: 'searchs#result'
   
   # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
