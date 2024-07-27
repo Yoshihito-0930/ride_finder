@@ -1,1 +1,63 @@
-<p>destinasion showページ</p>
+
+<div>
+  <ul>
+    
+      <% if @destination.image.present? %>
+        <li><img src="<%= get_photo_url(@destination.image) %>" alt="<%= @destination.name %>" width="400" height="300"></li>
+      <% end %>
+      <% if @destination %>
+        <li><%= @destination.name %> </li>
+        <li><%= @destination.address %> </li>
+      <% end %>
+      <% if @destination.rating %>
+        <li>評価:<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件) </li>
+      <% end %>
+  </ul>
+</div>
+
+
+<!--
+<div class="container">
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      
+      <div class="swiper-slide">
+        <%= image_tag asset_path(''), alt: '' %>
+      </div>
+      
+      <div class="swiper-slide">
+        <%= image_tag asset_path(''), alt: '' %>
+      </div>
+      
+      <div class="swiper-slide">
+        <%= image_tag asset_path(''), alt: '' %>
+      </div>
+      
+    </div>
+    <!-- ページネーション -->
+    <div class="swiper-pagination"></div>
+    <!-- 前後の矢印 -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
+</div>
+  <script>
+  const swiper = new Swiper(".swiper", {
+  loop: true, // ループ
+  speed: 3000, // 少しゆっくり(デフォルトは300)
+  autoplay: { // 自動再生
+    delay: 3000, // 3秒後に次のスライド
+    disableOnInteraction: false, // 矢印をクリックしても自動再生を止めない
+  },
+  // ページネーション
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+  // 前後の矢印
+  navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+  },
+  });
+</script>
