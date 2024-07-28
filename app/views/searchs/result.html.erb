@@ -3,13 +3,13 @@
 <% end %>
 
 <div class="bg-base-200 menu items-center">
-<!-- マップを表示する要素 -->
-<div id="map" style="height: 400px; width: 700px;"></div>
-  <h2 class="text-lg">検索結果</h2>
-    <ul id="places">
-    </ul>
+  <!-- マップを表示する要素 -->
+  <div id="map" style="height: 400px; width: 700px;"></div>
+    <h2 class="text-lg">検索結果</h2>
+      <ul id="places">
+      </ul>
+    </div>
   </div>
-</div>
 </div>
 
 <dialog id="desitination-modal" class="modal">
@@ -108,7 +108,7 @@ function initMap() {
           }
         );
         // 現在地を示す青丸のアイコンを表示
-        setCurrentLocationMaker(currentLocation, map);
+        setCurrentLocationMarker(currentLocation, map);
         console.log("initMap: performNearbySearchを呼び出し");
         performNearbySearch(currentLocation, timeLimit);
       },
@@ -144,8 +144,8 @@ function initMap() {
   }
 }
 
-// 現在地を示す青丸のアイコンを作成 調整中
-function setCurrentLocationMaker(currentLocation, map){
+// 現在地を示す青丸のアイコン
+function setCurrentLocationMarker(currentLocation, map){
   new google.maps.Marker({
       position: currentLocation,
       map: map,
@@ -255,7 +255,7 @@ function performNearbySearch(currentLocation) {
 }
 
 
-// 調整中 距離を使ったソート機能 これ使わないかも
+// 調整中 距離を使ったソート機能
 function sortResultsByDistance(results, userLocation) {
   results.sort((a, b) => {
     const distanceA = google.maps.geometry.spherical.computeDistanceBetween(userLocation, a.geometry.location);
@@ -362,11 +362,12 @@ function addPlaces(places, map) {
           }
 
           const marker = new google.maps.Marker({
-          map,
-          title: place.name,
-          position: location,
-        });
+            map,
+            title: place.name,
+            position: location,
+          });
 
+          console.log(`${place.name}の緯度経度は${location}`)
           const infoWindow = new google.maps.InfoWindow({
             content: place.name
           });
@@ -381,6 +382,8 @@ function addPlaces(places, map) {
 
           const li = document.createElement("li");
           li.textContent = place.name;
+
+          // 画像を表示
           if (place.photos && place.photos.length > 0) {
             const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 });
             const img = document.createElement("img");
@@ -423,9 +426,46 @@ function addPlaces(places, map) {
             }
             routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
             routeLink.target = "_blank";
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路含むルート' : info.type === 'avoidTolls' ? '有料道路を回避するルート' : '下道だけのルート'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路使って行く' : info.type === 'avoidTolls' ? '有料道路を回避して行く' : '下道だけで行く'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
             li.appendChild(routeLink);
           });
+
+          const button = document.createElement("button");
+          button.textContent = "詳細";
+          button.dataset.placeId = place.place_id;
+          button.addEventListener("click", () => {
+            // フォーム要素を作成
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/destinations';
+            
+            // place_data を hidden フィールドとして追加
+            const placeDataInput = document.createElement('input');
+            placeDataInput.type = 'hidden';
+            placeDataInput.name = 'place_data';
+            // 画像情報を含めた place_data を作成
+            const placeDataWithImage = {
+              ...place, // place オブジェクト全体をplaceDataWithImageコピー
+              photo_url: place.photos && place.photos.length > 0 ? place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 }) : null // 画像URLを追加
+            };
+
+            placeDataInput.value = JSON.stringify(placeDataWithImage); 
+            form.appendChild(placeDataInput);
+            
+            // CSRF トークンを追加
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfTokenInput = document.createElement('input');
+            csrfTokenInput.type = 'hidden';
+            csrfTokenInput.name = 'authenticity_token';
+            csrfTokenInput.value = csrfToken;
+            form.appendChild(csrfTokenInput);
+            
+            // フォームを body に追加して送信
+            document.body.appendChild(form);
+            form.submit();
+          });
+        
+          li.appendChild(button);
 
           placesList.appendChild(li);
 

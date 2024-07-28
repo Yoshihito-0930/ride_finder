@@ -21,10 +21,8 @@ class DestinationsController < ApplicationController
       destination.user_ratings_total = place_data['user_ratings_total']
     end
     if @destination.save
-      binding.pry
       redirect_to destination_path(@destination, place_id: @destination.google_maps_place_id)
     else
-      binding.pry
       flash.now[:alert] = "目的地の取得に失敗しました。"
       render searchs_result_path
     end
@@ -32,7 +30,6 @@ class DestinationsController < ApplicationController
 
   def show
     @destination = Destination.find_by(google_maps_place_id: params[:place_id])
-    binding.pry
   end
 
 
