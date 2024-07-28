@@ -1,5 +1,5 @@
-class SearchController < ApplicationController
-  def search
+class SearchsController < ApplicationController
+  def result
     @category = params[:category]
     @condition = params[:condition]
     @condition_value = if params[:condition] == 'distance'
