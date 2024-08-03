@@ -1,0 +1,10 @@
+<div class='ms-auto'>
+  <label class="swap">
+    <input type="checkbox" class="hidden">
+    <% if current_user.favorite?(destination) %>
+      <%= render 'shared/favorite_buttons', destination: destination %>
+    <% else %>
+      <%= render 'shared/unfavorite_buttons', destination: destination %>
+    <% end %>
+  </label>
+</div>
