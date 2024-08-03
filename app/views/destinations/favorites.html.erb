@@ -1,0 +1,32 @@
+<div class="container pt-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-sm-12 col-lg-4 mb-3">
+          <h2 class="text-lg menu items-center">お気に入り一覧</h2>
+            <div class="bg-base-200 menu items-center">
+              <% if @favorite_destinations.present? %>
+                <% @favorite_destinations.each do |destination| %>
+                  <div id="destination-id-<%= destination.id %>">
+                    <div class="card">
+                    <ul id="places">
+                      <li class="text-lg"><%= destination.name %></li>
+                      <% if destination.image.present? %>
+                        <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+                      <% end %>
+                      <li><%= destination.address %></li>
+                      <li><%= destination.rating %></li>
+                      <li><%= link_to "詳細", destination_path(destination)%></li>
+                    </ul>
+                  <% end %>
+                </div>
+                </div>
+              </div>
+            </div>
+        <% else %>
+          <p>お気に入りに登録されたスポットがありません</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

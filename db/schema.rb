@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_07_24_210035) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_29_233223) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,6 +37,26 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_24_210035) do
     t.string "google_maps_place_id", null: false
   end
 
+  create_table "favorite_destinations", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "destination_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["destination_id"], name: "index_favorite_destinations_on_destination_id"
+    t.index ["user_id", "destination_id"], name: "index_favorite_destinations_on_user_id_and_destination_id", unique: true
+    t.index ["user_id"], name: "index_favorite_destinations_on_user_id"
+  end
+
+  create_table "future_visits", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "destination_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["destination_id"], name: "index_future_visits_on_destination_id"
+    t.index ["user_id", "destination_id"], name: "index_future_visits_on_user_id_and_destination_id", unique: true
+    t.index ["user_id"], name: "index_future_visits_on_user_id"
+  end
+
   create_table "safety_tips", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -61,4 +81,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_24_210035) do
   end
 
   add_foreign_key "conditions", "users"
+  add_foreign_key "favorite_destinations", "destinations"
+  add_foreign_key "favorite_destinations", "users"
+  add_foreign_key "future_visits", "destinations"
+  add_foreign_key "future_visits", "users"
 end
