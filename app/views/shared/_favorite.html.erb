@@ -1,10 +1,11 @@
 <div class='ms-auto'>
-  <label class="swap">
-    <input type="checkbox" class="hidden">
     <% if current_user.favorite?(destination) %>
-      <%= render 'shared/favorite_buttons', destination: destination %>
+      <%= button_to favorite_destination_path(destination_id: destination.id), method: :delete, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-on"><%= image_tag "favorite_mark.svg", size:'30x30' %></div>
+  <% end %>
     <% else %>
-      <%= render 'shared/unfavorite_buttons', destination: destination %>
+      <%= button_to favorite_destinations_path(destination_id: destination.id), method: :post, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-off"><%= image_tag "unfavorite_mark.svg", size:'30x30' %></div>
+  <% end %>
     <% end %>
-  </label>
 </div>
