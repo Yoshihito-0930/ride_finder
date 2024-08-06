@@ -5,7 +5,7 @@ class DestinationsController < ApplicationController
     place_data = JSON.parse(params[:place_data])
 
     @destination = Destination.find_or_create_from_place_data(place_data)
-    if @destination || !@destination.new_record?
+    if @destination.present?
       redirect_to destination_path(@destination)
     else
       flash.now[:alert] = "目的地の取得に失敗しました。ページをリロードしてから再度お試し下さい。"

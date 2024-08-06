@@ -15,7 +15,7 @@ class Destination < ApplicationRecord
     # google_maps_place_id で検索または作成
     destination = find_or_create_by(google_maps_place_id: place_data['place_id']) do |destination|
       destination.name = place_data['name']
-      destination.address = place_data['formatted_address'].delete("日本、")
+      destination.address = place_data['formatted_address']&.delete("日本、")
       destination.latitude = place_data['geometry']['location']['lat']
       destination.longitude = place_data['geometry']['location']['lng']
       destination.rating = place_data['rating']
