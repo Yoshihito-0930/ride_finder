@@ -5,7 +5,8 @@
         <%= image_tag 'ride_finder_logo.png', size:'60x60' %>
       <% end %>
     </div> 
-    <button class="btn mx-5" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
+    <div class="">
+    <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
     <dialog id="my_modal_2" class="modal">
       <div class="modal-box">
         <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
@@ -16,7 +17,7 @@
               <%= form.label :category, "カテゴリー", class:"hidden" %>
               <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, {}, {class: "select select-bordered  w-full max-w-xs"} %>
             </div>
-            <p class="font-bold text-lg">条件を決めて現在地から探したい範囲を指定して下さい</p>
+            <p>条件を決めて現在地から探したい範囲を指定して下さい</p>
             <div>
               <%= form.label :condition, "条件", class:"hidden" %>
               <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
@@ -32,7 +33,7 @@
               <%= form.label :time_value, "時間：",class:"hidden" %>
               <%= form.select :time_value, [30, 45, 60].map { |v| ["#{v}分以内", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
             </div>
-            <%= form.submit "検索", class: "btn btn-ghost rounded-btn" %>
+            <%= form.submit "検索", class: "btn btn-ghost rounded-btn py-2" %>
           <% end %>
         </div>
       </div>
@@ -40,21 +41,22 @@
         <button>close</button>
       </form>
     </dialog>
+    </div>
     <div class="flex-none flex justify-end flex-1 px-5 ">
-    <ul class="menu menu-horizontal px-1">
-      <li>
-        <details>
-          <summary>メニュー</summary>
-          <ul class="bg-base-100 rounded-t-none p-2">
-          <!-- <li><%= link_to "後で行きたい", "#", class: "btn btn-block btn-ghost" %></li>
-          <li><%= link_to "お気に入り", "#", class: "btn btn-block btn-ghost" %></li> -->
-          <li><%= link_to "マイページ", users_path %></li>
-          <li><%= link_to "ログアウト", logout_path, data: { turbo_method: :delete } %></li>
-          </ul>
-        </details>
-      </li>
-    </ul>
-  </div>
+      <ul class="menu menu-horizontal px-1 w-42 ">
+        <li>
+          <details>
+            <summary>メニュー</summary>
+            <ul class="bg-base-100 rounded-t-none p-2">
+              <li><%= link_to "後で行きたい", "#", class: "btn btn-ghost" %></li>
+              <li><%= link_to "お気に入り", favorites_destinations_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "マイページ", users_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "btn btn-ghost" %></li>
+            </ul>
+          </details>
+        </li>
+      </ul>
+    </div>
   </div>
 </header>
 
