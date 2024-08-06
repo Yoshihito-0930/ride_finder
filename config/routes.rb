@@ -12,11 +12,16 @@ Rails.application.routes.draw do
   get 'logout', to: 'sessions#destroy'
   
   # get 'search_results', to: 'search_results#index'
-  get 'search', to: 'search#index'
   get 'searchs/result', to: 'searchs#result'
   
   # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
-  resources :destinations, only: %i[create show]
+  resources :destinations, only: %i[create show] do
+    collection do
+      get :favorites
+    end
+  end
+  resources :favorite_destinations, only: %i[create destroy]
+  resources :future_visits, only: %i[create destroy]
 end

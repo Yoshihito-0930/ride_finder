@@ -1,5 +1,5 @@
 
-<section class=" body-font">
+<section class="body-font">
   <div class="container px-5 py-12 mx-auto">
     <div class="flex flex-wrap w-full mb-10 md:ml-10">
       <div class="lg:w-1/2 w-full mb-6 lg:mb-0">
@@ -9,28 +9,31 @@
         <div class="h-1 w-20 rounded"></div>
         </div>
       </div>
-    <div class="flex justify-center md:w-5/6 w-full p-16 mx-auto rounded-lg bg-base-200">
-      <ul>
-        <% if @destination.image.present? %>
-          <li><img src="<%= get_photo_url(@destination.image) %>" alt="<%= @destination.name %>" width="450" height="350"></li>
-        <% end %>
-        <% if @destination %>
-          <li><%= @destination.name %> </li>
+    <div class="flex justify-center w-full p-8 mx-auto rounded-lg bg-base-200">
+      <% if @destination %>
+        <ul>
+          <li class="text-lg py-4"><%= @destination.name %> </li>
+          <div class="favorite flex-none flex justify-end">
+            <% if logged_in? %>
+              <%= render 'shared/favorite', destination: @destination %>
+            <% end %>
+          </div>
+          <% if @destination.image.present? %>
+            <li><img src="<%= get_photo_url(@destination.image) %>" alt="<%= @destination.name %>" width="500" height="400"></li>
+          <% end %>
           <li><%= @destination.address %> </li>
-        <% end %>
-        <% if @destination.rating %>
-          <li>評価:<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件) </li>
-        <% end %>
-      </ul>
+          <% if @destination.rating %>
+            <li>評価:<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件) </li>
+          <% end %>
+          <li><%= link_to "Google Mapで開く", "https://maps.app.goo.gl/?link=https://www.google.com/maps/place/?q=place_id:#{sanitize(@destination.google_maps_place_id)}", target: :_blank %> </li>
+        </ul>
+      <% end %>
+      </div>
+    <div class="flex flex-col sm:flex-row flex-wrap justify-center items-center">
+     <div id="map" style="height: 400px; width: 700px;" class="w-full sm:w-1/2 h-64 sm:h-96"></div>
+     <div id="pano" style="height: 400px; width: 700px;" class="w-full sm:w-1/2 h-64 sm:h-96"></div>
     </div>
   </div>
-  <div class="items-center">
-  <!-- マップを表示する要素 -->
-    <div id="map" style="height: 400px; width: 700px;"></div>
-    </div>
-    <div id="pano" style="height: 400px; width: 700px;"></div>
-  </div>
-</div>
 <div>
 
 <script>
@@ -42,6 +45,7 @@ const setLocation = { lat: destinationLat, lng: destinationLng };
 console.log(`destinationLat${destinationLat}`)
 console.log(`destinationLng${destinationLng}`)
 console.log(`setLocationは${setLocation}`)
+console.log("<%= @destination.image%>")
 function initMap() {
   if (mapInitialized) {
     return;

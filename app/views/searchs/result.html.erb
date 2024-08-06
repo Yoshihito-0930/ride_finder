@@ -65,15 +65,15 @@ if (condition === "time") {
   switch ("<%= @condition_value %>") {
     case "60":
       timeLimit = 60;
-      radius = 60 * 1000; // 1時間で55km
+      radius = 45 * 1000; // 1時間で45km
       break;
     case "45":
       timeLimit = 45;
-      radius = 45 * 1000; // 45分で40km
+      radius = 30 * 1000; // 45分で30km
       break;
     case "30":
       timeLimit = 30;
-      radius = 30 * 1000; // 30分で25km
+      radius = 15 * 1000; // 30分で15km
       break;
     default:
       radius = 90 * 1000; // 初期値として1時間半で85km
@@ -340,13 +340,14 @@ function addPlaces(places, map) {
   const placesList = document.getElementById("places");
   placesList.innerHTML = ""; // 前の結果をクリア
 
-  if (Array.isArray(places)&& places.length !== 0) {
+  if (Array.isArray(places) && places.length !== 0) {
     places.forEach(place => {
       if (place.geometry && place.geometry.location) {
         const location = place.geometry.location;
 
         // ルート情報が取得された後に実行するコールバック関数
 
+        //　修正が必要　結果が返ってきていたらここでreturnしても検索結果になにも表示されない。 if文の前に調べて検索結果に該当項目がないことを追加が必要
         getRoutes(location).then(routeInfos => {
           const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
           const drivingMinutes = noAvoidRoute.drivingMinutes;
@@ -367,7 +368,6 @@ function addPlaces(places, map) {
             position: location,
           });
 
-          console.log(`${place.name}の緯度経度は${location}`)
           const infoWindow = new google.maps.InfoWindow({
             content: place.name
           });
@@ -394,6 +394,7 @@ function addPlaces(places, map) {
           }
 
           // 住所を表示
+          console.log(`place.formatted_addressは${place.formatted_address}`)
           if (place.formatted_address) {
             const address = document.createElement("p");
             address.textContent = place.formatted_address.replace("日本、", "" );
@@ -408,7 +409,6 @@ function addPlaces(places, map) {
           }
 
           // 営業時間を表示
-          console.log(`営業時間は${place.opening_hours.weekday_text}`)
           if (place.opening_hours.weekday_text) {
             const weekdayBusinessHours = document.createElement("p");
             hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
@@ -504,4 +504,4 @@ function addPlaces(places, map) {
 
 
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
+<script async src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
