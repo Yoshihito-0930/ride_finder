@@ -1,0 +1,11 @@
+<div class='ms-auto'>
+    <% if current_user.future_visit?(destination) %>
+      <%= button_to future_visit_path(destination_id: destination.id), method: :delete, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-on"><%= image_tag "future_visit_icon.svg", size:'28x28' %></div>
+  <% end %>
+    <% else %>
+      <%= button_to future_visits_path(destination_id: destination.id), method: :post, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-off"><%= image_tag "not_future_visit_icon.svg", size:'28x28' %></div>
+  <% end %>
+    <% end %>
+</div>
