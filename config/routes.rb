@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   resources :destinations, only: %i[create show] do
     collection do
       get :favorites
+      get :future_visits
     end
   end
   resources :favorite_destinations, only: %i[create destroy]

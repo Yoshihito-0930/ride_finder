@@ -2,8 +2,8 @@ class User < ApplicationRecord
   has_many :conditions
   has_many :favorite_destinations, dependent: :destroy
   has_many :future_visits, dependent: :destroy
-  has_many :destinations, through: :favorite_destinations, source: :destination
-  has_many :future_visit_destinations, through: :future_visits, source: :destination
+  has_many :favorites, through: :favorite_destinations, source: :destination
+  has_many :upcoming_destinations, through: :future_visits, source: :destination
 
   validates :uid, presence: true
   validates :name, presence: true
@@ -18,15 +18,29 @@ class User < ApplicationRecord
     end
   end
 
-  def favorite(destination)
-    destinations << destination
+  #お気に入り機能
+  def add_favorite(destination)
+    favorites << destination
   end
   
   def unfavorite(destination)
-    destinations.destroy(destination)
+    favorites.destroy(destination)
   end
   
   def favorite?(destination)
-    destinations.include?(destination)
+    favorites.include?(destination)
+  end
+
+  #後で行く機能
+  def add_future_visit(destination)
+    upcoming_destinations << destination
+  end
+  
+  def remove_future_visit(destination)
+    upcoming_destinations.destroy(destination)
+  end
+  
+  def future_visit?(destination)
+    upcoming_destinations.include?(destination)
   end
 end
