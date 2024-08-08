@@ -1,32 +1,24 @@
-<div class="container pt-3">
-  <div class="row">
-    <div class="col-12">
-      <div class="row">
-        <div class="col-sm-12 col-lg-4 mb-3">
-          <h2 class="text-lg menu items-center">後で行く一覧</h2>
-            <div class="bg-base-200 menu items-center">
-              <% if @future_visit_destinations.present? %>
-                <% @future_visit_destinations.each do |destination| %>
-                  <div id="destination-id-<%= destination.id %>">
-                    <div class="card">
-                      <ul id="places">
-                        <li class="text-lg"><%= destination.name %></li>
-                        <% if destination.image.present? %>
-                          <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
-                        <% end %>
-                        <li><%= destination.address %></li>
-                        <li><%= destination.rating %></li>
-                        <li><%= link_to "詳細", destination_path(destination)%></li>
-                      </ul>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-        <% else %>
-          <p>後で行くに登録されたスポットがありません</p>
-        <% end %>
-      </div>
-    </div>
+<div class="pt-3 mb-3">
+  <h2 class="text-lg menu items-center">後で行く一覧</h2>
+  <div class="bg-base-200 menu items-center">
+    <% if @future_visit_destinations.present? %>
+      <% @future_visit_destinations.each do |destination| %>
+        <div id="destination-id-<%= destination.id %>">
+          <div class="card">
+            <ul id="places">
+              <li class="text-lg"><%= destination.name %></li>
+              <% if destination.image.present? %>
+                <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+              <% end %>
+              <li><%= destination.address %></li>
+              <li><%= destination.rating %></li>
+              <li><%= link_to "詳細", destination_path(destination)%></li>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p>後で行くに登録されたスポットがありません</p>
+    <% end %>
   </div>
 </div>
