@@ -4,18 +4,26 @@
     <% if @future_visit_destinations.present? %>
       <% @future_visit_destinations.each do |destination| %>
         <div id="destination-id-<%= destination.id %>">
-          <div class="card">
-            <ul id="places">
-              <li class="text-lg"><%= destination.name %></li>
-              <li><%= link_to destination_path(destination) do %>
-              <% if destination.image.present? %>
-                <img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+          <div class="card card-compact bg-base-100 w-96 shadow-xl py-3">
+            <figure>
+              <%= link_to destination_path(destination) do %>
+                <% if destination.image.present? %>
+                  <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+                <% end %>
               <% end %>
+            </figure>
+            <div class="card-body">
+              <%= link_to destination_path(destination) do %>
+                <h2 class="card-title"><%= destination.name %></h2>
               <% end %>
-              <li><%= destination.address %></li>
-              <li><%= destination.rating %></li>
-              
-            </ul>
+              <p><%= destination.address %></p>
+              <% if destination.rating.present? %>
+                <li>★<%= destination.rating %>(レビュー件数:<%= destination.user_ratings_total%>件)</li>
+              <% end %>
+              <div class="card-actions justify-end">
+                <button class="btn">行ってみる</button>
+              </div>
+            </div>
           </div>
         </div>
       <% end %>
