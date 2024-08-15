@@ -193,24 +193,39 @@ function performNearbySearch(currentLocation) {
     service.nearbySearch(request,
     function (results, status, pagination) {
       if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-        console.log("ここで止まっている",status)
+        console.log("nearbySearch止まっている",status)
       return;
       }
       console.log("nearbySearch実行中")
       results.forEach(result => {
         console.log(result.name);
       });
-      addPlaces(results, map);
-      if (moreButton) {
-        moreButton.disabled = !pagination || !pagination.hasNextPage;
 
-        if (pagination && pagination.hasNextPage) {
-          getNextPage = function () {
-            pagination.nextPage();
-          };
+      // nearbySearchだとformatted_addressが取得できないためgetDetailsで取得する
+      let detailRequestsCompleted = 0; 
+      results.forEach(result => {
+      service.getDetails({ placeId: result.place_id, fields: ['formatted_address'] }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          result.formatted_address = place.formatted_address; 
+        } else {
+          console.error("Place Details request failed:", status);
         }
-      }
-      console.log("NearbySearch終了");
+        detailRequestsCompleted++;
+        if (detailRequestsCompleted === results.length) {
+          addPlaces(results, map);
+          if (moreButton) {
+            moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+            if (pagination && pagination.hasNextPage) {
+              getNextPage = function () {
+                pagination.nextPage();
+              };
+            }
+          }
+          console.log("NearbySearch終了");
+        }
+      });
+    });
     });
   } else if(textCategory){
     request = {
