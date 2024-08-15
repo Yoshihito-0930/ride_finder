@@ -16,6 +16,8 @@ gem 'fly'
 
 gem 'tailwindcss-rails'
 
+gem 'dartsass-rails'
+
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-line'
