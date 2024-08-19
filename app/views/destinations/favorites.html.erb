@@ -9,6 +9,8 @@
               <%= link_to destination_path(destination) do %>
                 <% if destination.image.present? %>
                   <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+                <% else %>
+                  <li><%= image_tag 'no_image.svg', size:'400x300' %></li>
                 <% end %>
               <% end %>
             </figure>
