@@ -8,7 +8,7 @@ class FavoriteDestinationsController < ApplicationController
   end
 
   def destroy
-    destination = current_user.favorites.find_by(id: params[:destination_id])
+    destination = current_user.favorites.find(params[:destination_id])
     current_user.unfavorite(destination)
     redirect_to destination_path(destination)
   end
