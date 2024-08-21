@@ -8,7 +8,7 @@ class FutureVisitsController < ApplicationController
   end
 
   def destroy
-    destination = current_user.upcoming_destinations.find_by(id: params[:destination_id])
+    destination = current_user.upcoming_destinations.find(params[:destination_id])
     current_user.remove_future_visit(destination)
     redirect_to destination_path(destination)
   end
