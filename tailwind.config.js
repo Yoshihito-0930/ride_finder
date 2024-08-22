@@ -25,5 +25,6 @@ module.exports = {
     themes: [
       "light"
     ],
+    darkTheme: false,
   }
 };
