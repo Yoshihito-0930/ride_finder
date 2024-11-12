@@ -14,7 +14,7 @@ gem "pg", "~> 1.1"
 
 gem 'fly'
 
-gem 'tailwindcss-rails'
+gem "tailwindcss-rails"
 
 gem 'dartsass-rails'
 
@@ -100,3 +100,5 @@ group :test do
 end
 
 gem "dockerfile-rails", ">= 1.6", :group => :development
+
+
