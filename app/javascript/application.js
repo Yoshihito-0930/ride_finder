@@ -1,1 +1,1 @@
-//= require swiper/js/swiper.js
+console.log("JavaScript is loaded");

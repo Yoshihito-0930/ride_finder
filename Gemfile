@@ -14,7 +14,7 @@ gem "pg", "~> 1.1"
 
 gem 'fly'
 
-gem "tailwindcss-rails"
+# gem 'tailwindcss-rails', '~> 2.0'
 
 gem 'dartsass-rails'
 

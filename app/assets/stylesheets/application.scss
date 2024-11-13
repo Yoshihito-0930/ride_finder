@@ -1,4 +1,9 @@
-@import "application.tailwind";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "daisyui";
+
 @import "search";
 @import 'swiper/swiper-bundle';
 

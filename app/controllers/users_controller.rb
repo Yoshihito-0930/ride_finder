@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :set_user
+  before_action :set_user, only: %i[show edit]
   before_action :require_login, only: %i[show edit]
 
   def show
@@ -9,7 +9,12 @@ class UsersController < ApplicationController
   end
 
   def update
-    @user = User.
+    @user = current_user.boards.find(params[:id])
+    if @user.update(user_params)
+      redirect_to user_path(@user), success: t('defaults.flash_message.updated', item: Board.model_name.human)
+    else
+      flash.now[:danger] = t('defaults.flash_message.not_updated', item: Board.model_name.human)
+      render :edit, status: :unprocessable_entity
   end
 
 
