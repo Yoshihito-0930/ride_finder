@@ -15,6 +15,7 @@ class UsersController < ApplicationController
     else
       flash.now[:danger] = t('defaults.flash_message.not_updated', item: Board.model_name.human)
       render :edit, status: :unprocessable_entity
+    end
   end
 
 

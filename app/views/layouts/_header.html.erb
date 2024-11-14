@@ -1,5 +1,5 @@
-<header>
-  <div class="navbar bg-base-300 ">
+<header class="z-30 relative">
+  <div class="navbar bg-base-300 z-50">
     <div class="flex-1">
       <%= link_to '/', class: "navbar-brand" do %>
         <%= image_tag 'ride_finder_logo.png', size:'60x60' %>
@@ -42,12 +42,12 @@
       </form>
     </dialog>
     </div>
-    <div class="flex-none flex justify-end px-5 z-10">
-      <ul class="menu menu-horizontal px-1 w-42">
+    <div class="flex-none flex justify-end px-5 z-50">
+      <ul class="menu menu-horizontal px-1 w-42 z-50">
         <li>
-          <details>
+          <details class="relative z-50">
             <summary>メニュー</summary>
-            <ul class="bg-base-100 rounded-t-none p-2">
+            <ul class="bg-base-100 rounded-t-none p-2 z-50 relative">
               <li><%= link_to "後で行きたい", future_visits_destinations_path , class: "btn btn-ghost" %></li>
               <li><%= link_to "お気に入り", favorites_destinations_path, class: "btn btn-ghost" %></li>
               <li><%= link_to "マイページ", users_path, class: "btn btn-ghost" %></li>

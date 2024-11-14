@@ -342,7 +342,7 @@ function getRoutes(location, callback) {
           const numberDistance = route.legs[0].distance.value; // 距離をメートルで取得
           resolve({ type, drivingTime, textDistance, numberDistance, drivingMinutes });
         } else {
-          reject('Directions request failed due to ' + status);
+          reject('Directions request failed' + status);
         }
       });
     })

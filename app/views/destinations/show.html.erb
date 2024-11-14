@@ -20,7 +20,7 @@
             <% end %>
           </div>
           <% if @destination.image.present? %>
-            <li><img src="<%= get_photo_url(@destination.image) %>" alt="<%= @destination.name %>" width="500" height="400"></li>
+            <li><%= image_tag "data:image/jpeg;base64,#{@destination.image}" %></li>
           <% end %>
           <li><%= @destination.address %> </li>
           <% if @destination.rating %>
