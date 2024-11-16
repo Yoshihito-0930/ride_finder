@@ -21,6 +21,21 @@
   </div>
 </dialog>
 
+<div class="swiper-container">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide">スライド1</div>
+    <div class="swiper-slide">スライド2</div>
+    <div class="swiper-slide">スライド3</div>
+  </div>
+
+  <!-- ページネーション -->
+  <div class="swiper-pagination"></div>
+
+  <!-- ナビゲーションボタン -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+</div>
+
 
 
 <script>
@@ -160,6 +175,27 @@ function setCurrentLocationMarker(currentLocation, map){
   });
 }
 
+// textSearch利用時にHPの取得
+function getPlaceDetails(placeId, result) {
+  const request = {
+    placeId: placeId,
+    fields: ['website'], // 公式ウェブサイトのみ取得
+  };
+
+  service.getDetails(request, (place, status) => {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      if (place.website){
+        result.website = place.website;
+        console.log("Website:", place.website);
+      }
+    } else {
+      console.error("Place Details request failed:", status);
+    }
+
+    // 必要ならばUIを更新
+    updateUIWithWebsite(result);
+  });
+}
 function performNearbySearch(currentLocation) {
   console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
@@ -204,9 +240,13 @@ function performNearbySearch(currentLocation) {
       // nearbySearchだとformatted_addressが取得できないためgetDetailsで取得する
       let detailRequestsCompleted = 0; 
       results.forEach(result => {
-      service.getDetails({ placeId: result.place_id, fields: ['formatted_address'] }, (place, status) => {
+      service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website'] }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-          result.formatted_address = place.formatted_address; 
+          result.formatted_address = place.formatted_address;
+          if (place.website){
+            result.website = place.website;
+            console.log("Website:", place.website);
+          }
         } else {
           console.error("Place Details request failed:", status);
         }
@@ -430,7 +470,7 @@ function addPlaces(places, map) {
             li.appendChild(businessHours);
           }
 
-          // ルート情報を表示
+          // 目的地までの所要時間の表示
           routeInfos.forEach(info => {
             const routeLink = document.createElement("a");
             let avoidParams = '';
@@ -445,6 +485,8 @@ function addPlaces(places, map) {
             li.appendChild(routeLink);
           });
 
+          li.classList.add('hover-no-bg')
+
           const button = document.createElement("button");
           button.textContent = "詳細";
           button.dataset.placeId = place.place_id;
@@ -454,13 +496,13 @@ function addPlaces(places, map) {
             form.method = 'POST';
             form.action = '/destinations';
             
-            // place_data を hidden フィールドとして追加
+            // place_dataを hiddenフィールドとして追加
             const placeDataInput = document.createElement('input');
             placeDataInput.type = 'hidden';
             placeDataInput.name = 'place_data';
             // 画像情報を含めた place_data を作成
             const placeDataWithImage = {
-              ...place, // place オブジェクト全体をplaceDataWithImageコピー
+              ...place, // placeオブジェクト全体をplaceDataWithImageコピー
               photo_url: place.photos && place.photos.length > 0 ? place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 }) : null // 画像URLを追加
             };
 
