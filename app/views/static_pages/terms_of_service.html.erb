@@ -1,12 +1,10 @@
 <section class="body-font">
-  <div class="container px-5 py-24 mx-auto">
-    <div class="flex flex-wrap w-full mb-20 md:ml-10">
+  <div class="container py-12 mx-auto">
+    <div class="flex flex-wrap w-full mb-20">
       <div class="lg:w-1/2 w-full mb-6 lg:mb-0">
         <h1 class="sm:text-3xl text-2xl font-medium title-font mb-2 text-theme">
-        <i class="ph-bold ph-fish fa-lg"></i> 利用規約
+          <i class="ph-bold ph-fish fa-lg"></i> 利用規約
         </h1>
-        <div class="h-1 w-20 rounded"></div>
-      </div>
     </div>
     <div class="flex justify-center md:w-5/6 w-full p-16 mx-auto rounded-lg bg-white">
       <div>
@@ -97,12 +95,12 @@
         <br>
         以上
       <div>
+        <div class="mt-10 mx-3 flex flex-row justify-center">
+          <%= link_to root_path, class: "bg-card-body bg-base-300 border rounded-full py-2 px-5 hover:bg hover:border-neutral hover:text-neutral focus:outline-none focus:ring-2 focus:ring-offset-2" do %>
+            <i class="fa-solid fa-house-chimney-window mr-2"></i>トップページに戻る
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
-  </div>
-  <div class="mt-10 mx-3 flex flex-row justify-center">
-  <%= link_to root_path, class: "bg-card-body bg-base-300 border  rounded-full py-2 px-5 hover:bg hover:border-neutral hover:text-neutral focus:outline-none focus:ring-2 focus:ring-offset-2" do %>
-    <i class="fa-solid fa-house-chimney-window mr-2"></i>トップページに戻る
-  <% end %>
-</div>
 </section>

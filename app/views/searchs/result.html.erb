@@ -2,10 +2,10 @@
   <%= stylesheet_link_tag "search", media: "all", "data-turbo-track": "reload" %>
 <% end %>
 
-<div class="bg-base-200 menu items-center">
+<div class="bg-base-200 menu items-center py-4">
   <!-- マップを表示する要素 -->
-  <div id="map" style="height: 400px; width: 700px;"></div>
-    <h2 class="text-lg">検索結果</h2>
+  <div id="map" class="w-full h-64 sm:w-1/2 sm:h-96 lg:w-3/4 lg:h-[500px]"></div>
+    <h2 class="text-lg py-4">検索結果</h2>
       <ul id="places">
       </ul>
     </div>
@@ -115,11 +115,14 @@ function initMap() {
           document.getElementById("map"),
           {
             center: currentLocation,
-            zoom: 11,
+            zoom: 10,
             fullscreenControl: false,
             streetViewControl: false,
             keyboardShortcuts: false,
             mapTypeControl: true,
+            mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, // ドロップダウン形式に変更
+            },
           }
         );
         // 現在地を示す青丸のアイコンを表示
@@ -481,14 +484,14 @@ function addPlaces(places, map) {
             }
             routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
             routeLink.target = "_blank";
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路使って行く' : info.type === 'avoidTolls' ? '有料道路を回避して行く' : '下道だけで行く'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路を使って行く' : info.type === 'avoidTolls' ? '有料道路を回避して行く' : '下道で行く'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
             li.appendChild(routeLink);
           });
 
           li.classList.add('hover-no-bg')
 
           const button = document.createElement("button");
-          button.textContent = "詳細";
+          button.textContent = "詳細を見る";
           button.dataset.placeId = place.place_id;
           button.addEventListener("click", () => {
             // フォーム要素を作成

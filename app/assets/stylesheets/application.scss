@@ -39,3 +39,16 @@
 .custom-image {
   aspect-ratio: unset;
 }
+
+.map-container {
+  width: 100%;
+  height: 400px; /* デフォルトの高さ */
+
+  @media (min-width: 640px) {
+    height: 500px; /* タブレットサイズ以上 */
+  }
+
+  @media (min-width: 1024px) {
+    height: 700px; /* デスクトップサイズ以上 */
+  }
+}
