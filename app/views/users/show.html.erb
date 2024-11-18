@@ -3,8 +3,8 @@
     <h2 class="">マイページメニュー</h2>
     <%= image_tag @user.image, size: "200x200" %>
     <a>ユーザーネーム： <%= @user.name %></a>
-    <li><%= link_to "お気に入り", favorites_destinations_path %></li>
-    <li><%= link_to "後で行きたい", future_visits_destinations_path %></li>
+    <li><%= link_to "お気に入り一覧", favorites_destinations_path %></li>
+    <li><%= link_to "後で行きたい一覧", future_visits_destinations_path %></li>
   </ul>
 </div>
 

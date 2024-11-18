@@ -1,5 +1,5 @@
 <div class="pt-3 mb-3">
-  <h2 class="text-lg menu items-center">後で行く一覧</h2>
+  <h2 class="text-lg menu items-center">後で行きたい一覧</h2>
   <div class="bg-base-200 menu items-center">
     <% if @future_visit_destinations.present? %>
       <% @future_visit_destinations.each do |destination| %>
@@ -8,7 +8,7 @@
             <figure>
               <%= link_to destination_path(destination) do %>
                 <% if destination.image.present? %>
-                  <li><img src="<%= get_photo_url(destination.image) %>" alt="<%= destination.name %>" width="400" height="300"></li>
+                  <li><%= image_tag "data:image/jpeg;base64,#{destination.image}" %></li>
                 <% end %>
               <% end %>
             </figure>

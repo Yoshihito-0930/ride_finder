@@ -61,6 +61,7 @@ Rails.application.configure do
 
   config.assets.debug = true
   config.assets.digest = false
+  config.assets.check_precompiled_asset = false
   config.assets.compile = true
 
   if defined?(Dotenv)
