@@ -1,13 +1,12 @@
-<header class="z-50 relative">
-  <div class="navbar bg-base-300 z-50">
-    <div class="flex-1">
-      <%= link_to '/', class: "navbar-brand" do %>
+<header class='z-50 relative'>
+  <div class='navbar bg-base-300 z-50'>
+    <div class='flex-1 px-2'>
+      <%= link_to '/', class: 'navbar-brand' do %>
         <%= image_tag 'ride_finder_logo.png', size:'60x60' %>
       <% end %>
-    </div> 
-    <div class="">
-    <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
-    <dialog id="my_modal_2" class="modal">
+    </div>
+    <button class='btn' onclick='my_modal_2.showModal()'>ツーリングスポットを探す</button>
+    <dialog id='my_modal_2' class='modal'>
       <div class="modal-box">
         <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
         <p class="py-4"></p>
@@ -17,7 +16,7 @@
               <%= form.label :category, "カテゴリー", class:"hidden" %>
               <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, {}, {class: "select select-bordered  w-full max-w-xs"} %>
             </div>
-            <p>条件を決めて現在地から探したい範囲を指定して下さい</p>
+            <p>「時間」「距離」のどちらで探すか選択して下さい</p>
             <div>
               <%= form.label :condition, "条件", class:"hidden" %>
               <%= form.select :condition, Condition.condition_types.keys.map { |key| [I18n.t("activerecord.attributes.condition.condition_type.#{key}"), key] }, {}, id: 'condition-select', class: "select select-bordered  w-full max-w-xs" %>
@@ -41,7 +40,6 @@
         <button>close</button>
       </form>
     </dialog>
-    </div>
     <div class="flex-none flex justify-end px-5 z-50">
       <ul class="menu menu-horizontal px-1 w-42 z-50">
         <li>
