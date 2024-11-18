@@ -1,4 +1,54 @@
-@import "application.tailwind";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "daisyui";
+
 @import "search";
 @import 'swiper/swiper-bundle';
 
+.hover-no-bg:hover {
+  background-color: transparent !important;
+}
+
+
+.destination-image {
+  position: relative;
+
+  .swiper-container {
+    img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+    }
+  }
+
+  .destination-name {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 10;
+    a {
+      color: white;
+    }
+  }
+}
+
+.custom-image {
+  aspect-ratio: unset;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px; /* デフォルトの高さ */
+
+  @media (min-width: 640px) {
+    height: 500px; /* タブレットサイズ以上 */
+  }
+
+  @media (min-width: 1024px) {
+    height: 700px; /* デスクトップサイズ以上 */
+  }
+}

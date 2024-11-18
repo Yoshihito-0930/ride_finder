@@ -1,16 +1,22 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
   content: [
     './public/*.html',
+    './public/**/*.html',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
-    './app/views/**/*.{erb,haml,html,slim}'
+    './app/views/**/*.{erb,haml,html,slim}',
+    './app/views/**/*.html.erb',
+    './app/assets/stylesheets/**/*.css',
   ],
   theme: {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+      },
+      backgroundColor: {
+        'custom-hover': '#f0f0f0', // ホバー時のカスタム背景色
       },
     },
   },
@@ -25,5 +31,6 @@ module.exports = {
     themes: [
       "light"
     ],
+    darkTheme: false,
   }
 };

@@ -21,6 +21,7 @@ class Destination < ApplicationRecord
       destination.rating = place_data['rating']
       destination.image = place_data['photo_url'] if place_data['photo_url'].present?
       destination.google_maps_place_id = place_data['place_id']
+      destination.website = place_data['website'] if place_data['website'].present?
 
       if place_data['opening_hours'] && place_data['opening_hours']['weekday_text']
         destination.business_hours = place_data['opening_hours']['weekday_text'].join("\n")
