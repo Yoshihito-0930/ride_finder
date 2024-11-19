@@ -12,7 +12,7 @@
     <div class="flex justify-center my-4 rounded-lg bg-base-200">
       <% if @destination %>
         <ul>
-          <li class="text-lg py-4"><%= @destination.name %></li>
+          <li class="text-xl py-4"><%= @destination.name %></li>
           <div class="favorite flex-none flex justify-end">
             <% if logged_in? %>
               <%= render 'shared/future_visit_button', destination: @destination %>

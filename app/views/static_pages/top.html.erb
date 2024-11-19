@@ -10,20 +10,22 @@
       </div>
       <!-- <figure><img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure> -->
     </div>
-    <div class="card bg-base-100 w-96 shadow-xl">
-      <!--<figure class="px-10 pt-10">
-        <img
-        src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-        alt="Shoes"
-        class="rounded-xl" />
-      </figure>  -->
-      <div class="card-body items">
-        <h2 class="card-title">ログインして便利な機能を使ってみよう</h2>
-        <p>LINE・Googleアカウントを使って簡単にログインが出来ます。ログインすると見つけたツーリングスポットを保存していつでも行けるように出来ます。</p>
-        <div class="card-actions justify-center">
-          <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn" %>
+    <% if !logged_in? %>
+      <div class="card bg-base-100 w-96 shadow-xl">
+        <!--<figure class="px-10 pt-10">
+          <img
+          src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+          alt="Shoes"
+          class="rounded-xl" />
+        </figure>  -->
+        <div class="card-body items">
+          <h2 class="card-title">ログインして便利な機能を使ってみよう</h2>
+          <p>LINE・Googleアカウントを使って簡単にログインが出来ます。ログインすると見つけたツーリングスポットを保存していつでも行けるように出来ます。</p>
+          <div class="card-actions justify-center">
+            <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn" %>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
 </div> 
