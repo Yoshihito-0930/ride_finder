@@ -5,9 +5,11 @@
 <div class="bg-base-200 menu items-center py-4">
   <!-- マップを表示する要素 -->
   <div id="map" class="w-full h-64 sm:w-1/2 sm:h-96 lg:w-3/4 lg:h-[500px]"></div>
-    <h2 class="text-lg py-4">検索結果</h2>
-      <ul id="places">
-      </ul>
+    <h2 class="text-2xl py-4">検索結果</h2>
+    <ul id="places">
+    </ul>
+    <div id="more-container">
+      <button id="more-button" class="btn">もっと見る</button>
     </div>
   </div>
 </div>
@@ -25,10 +27,10 @@
 let map;
 let currentLocation;
 let currentInfoWindow = null;
-let mapInitialized = false; //initMap関数が1度だけ実行されるか確認する
+let mapInitialized = false;
 
-let typeCategory
-let textCategory
+let typeCategory;
+let textCategory;
 let checkConditionDistance = false;
 
 // nearbySearchでtypeが無いものはtextSearchを使う
@@ -51,12 +53,12 @@ switch("<%= @category %>"){
   case "riders_cafe":
     textCategory = "ライダーズカフェ";
     break;
-}
+};
 
 console.log("<%= @category %>")
 const condition = "<%= @condition %>"
 let timeLimit;
-let radius; // timeLimitを使う場合にデフォルト値として使う
+let radius;
 
 // 時間検索の際radiusが大きすぎるとフィルタリングで結果が全然表示されないから調整
 if (condition === "time") {
@@ -83,6 +85,7 @@ if (condition === "time") {
 }
 console.log("<%= @condition_value %>")
 console.log(radius)
+
 function initMap() {
   if (mapInitialized) {
     return;
@@ -143,7 +146,7 @@ function initMap() {
     addPlaces(failedToGetCurrentLocation, map);
     mapInitialized = true;
   }
-}
+};
 
 // 現在地を示す青丸のアイコン
 function setCurrentLocationMarker(currentLocation, map){
@@ -178,10 +181,10 @@ function getPlaceDetails(placeId, result) {
       console.error("Place Details request failed:", status);
     }
 
-    // 必要ならばUIを更新
     updateUIWithWebsite(result);
   });
-}
+};
+
 function performNearbySearch(currentLocation) {
   console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
@@ -379,7 +382,6 @@ function getRoutes(location, callback) {
 
 function addPlaces(places, map) {
   const placesList = document.getElementById("places");
-  placesList.innerHTML = ""; // 前の結果をクリア
 
   if (Array.isArray(places) && places.length !== 0) {
     places.forEach(place => {
@@ -400,7 +402,7 @@ function addPlaces(places, map) {
           if (timeLimit && drivingMinutes > timeLimit) {
             return;
           }else if(checkConditionDistance && numberDistance > radius){
-            return
+            return;
           }
 
           const marker = new google.maps.Marker({
@@ -449,7 +451,7 @@ function addPlaces(places, map) {
             li.appendChild(rating);
           }
 
-          // 営業時間を表示
+          // 営業時間を表示(調整中)
           if (place.opening_hours.weekday_text) {
             const weekdayBusinessHours = document.createElement("p");
             hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
