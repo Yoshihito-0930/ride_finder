@@ -8,11 +8,11 @@
     <button class='btn' onclick='my_modal_2.showModal()'>ツーリングスポットを探す</button>
     <dialog id='my_modal_2' class='modal'>
       <div class="modal-box">
-        <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
-        <p class="py-4"></p>
+        <h3 class="font-bold text-lg pb-4 ">探したいツーリングスポットの条件を選択して下さい</h3>
         <div>
           <%= form_with url: searchs_result_path, method: :get, local: true do |form| %>
             <div>
+            <p class="">行きたい場所のカテゴリーを選択して下さい</p>
               <%= form.label :category, "カテゴリー", class:"hidden" %>
               <%= form.select :category, VisitCategory.names.keys.map { |key| [I18n.t("activerecord.attributes.visit_category.name.#{key}"), key] }, {}, {class: "select select-bordered  w-full max-w-xs"} %>
             </div>

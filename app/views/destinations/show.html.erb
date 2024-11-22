@@ -24,7 +24,7 @@
           <% end %>
           <li><%= @destination.address %> </li>
           <% if @destination.rating %>
-            <li><a >評価:<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件)</a> </li>
+            <li><a >評価: ★<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件)</a> </li>
           <% end %>
           <% if @destination.website %>
             <li>
@@ -50,9 +50,14 @@
               Google Mapで開く
             <% end %>
           </li>
+          <button class="btn my-4" data-lat="<%= @destination.latitude %>" data-lng="<%= @destination.longitude %>">
+            行ってみる
+          </button>
+          <%= render "shared/route_modal" %>
         </ul>
       <% end %>
     </div>
+    
     <div class="flex flex-col sm:flex-row flex-wrap justify-center items-center rounded-lg bg-base-200 py-4">
      <div id="map" class="w-full sm:w-1/2 h-64 sm:h-96"></div>
      <div id="pano" class="w-full sm:w-1/2 h-64 sm:h-96"></div>
@@ -93,9 +98,18 @@
               mapTypeControl: true,
             }
           );
-          setCurrentLocationMarker(currentLocation, map);
-          setDestinationMarker(setLocation, map)
+          // setCurrentLocationMarker(currentLocation, map);
+          // setDestinationMarker(setLocation, map)
           streetViewService(setLocation)
+
+          directionsService = new google.maps.DirectionsService();
+
+  // 各条件に対応する DirectionsRenderer を作成
+  directionsRenderers = {
+    noAvoid: new google.maps.DirectionsRenderer({ map }),
+    avoidTolls: new google.maps.DirectionsRenderer({ map }),
+    avoidHighways: new google.maps.DirectionsRenderer({ map }),
+  };
         },
         function(error) {
           console.error("Error occurred. Error code: " + error.code);
@@ -131,6 +145,70 @@
     }
   }
 
+  // ルートを取得して地図に描画
+  function displayRoutes(location) {
+    const baseRequest = {
+      origin: currentLocation,
+      destination: location,
+      travelMode: 'DRIVING',
+      drivingOptions: {
+        departureTime: new Date(Date.now() + 5000),
+        trafficModel: 'bestguess',
+      },
+    };
+
+    const requests = {
+      noAvoid: { ...baseRequest },
+      avoidTolls: { ...baseRequest, avoidTolls: true },
+      avoidHighways: { ...baseRequest, avoidTolls: true, avoidHighways: true },
+    };
+
+    // 各ルートを DirectionsService で取得し、描画
+    Object.keys(requests).forEach((key) => {
+      directionsService.route(requests[key], (response, status) => {
+        if (status === 'OK') {
+          directionsRenderers[key].setDirections(response);
+        } else {
+          console.error(`ルート取得失敗: ${key}, ステータス: ${status}`);
+        }});
+    });
+  }
+
+  // 表示するルートを切り替える
+  function toggleRoute(type) {
+    Object.keys(directionsRenderers).forEach((key) => {
+      if (key === type) {
+        directionsRenderers[key].setMap(map); // 選択されたルートを表示
+      } else {
+        directionsRenderers[key].setMap(null); // 他のルートは非表示
+      }
+    });
+  }
+
+  // 「行ってみる」ボタンのイベントリスナーを設定
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const lat = parseFloat(button.getAttribute("data-lat"));
+        const lng = parseFloat(button.getAttribute("data-lng"));
+        const location = { lat, lng };
+
+        displayRoutes(location); // ルートを取得して地図に描画
+
+        // デフォルトで有料道路を使用したルートを表示
+        toggleRoute("noAvoid");
+      });
+    });
+
+    // 切り替えボタンのイベントリスナーを設定
+    document.getElementById("toggle-noAvoid").addEventListener("click", () => toggleRoute("noAvoid"));
+    document.getElementById("toggle-avoidTolls").addEventListener("click", () => toggleRoute("avoidTolls"));
+    document.getElementById("toggle-avoidHighways").addEventListener("click", () => toggleRoute("avoidHighways"));
+  });
+
+  /*
   function setDestinationMarker(setLocation, map){
     new google.maps.Marker({
       map: map,
@@ -138,6 +216,7 @@
       position: setLocation
     });
   }
+  */
 
   function streetViewService(setLocation){
     new google.maps.StreetViewPanorama(
@@ -151,6 +230,126 @@
       }
    );
   }
+
+
+  function getRoutes(location, callback) {
+    const directionsService = new google.maps.DirectionsService();
+    const origin = currentLocation;  // ユーザーの現在地
+    const destination = location; //'目的地の住所'
+  
+    // 共通のリクエスト
+    const baseRequest = {
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING',
+      drivingOptions: {
+        departureTime: new Date(Date.now() + 5000),  // 現在の時刻だと適切に処理されない可能性があるため現在時刻の5秒後を指定
+        trafficModel: 'bestguess'
+      }
+    };
+    
+    // 高速道路を避けるリクエスト(一般道のみ)
+    const avoidHighwaysRequest = {
+      ...baseRequest,
+      avoidHighways: true,
+      avoidTolls: true
+    };
+    
+    // 有料道路を避けるリクエスト(高速無料区間は通る)
+    const avoidTollsRequest = {
+      ...baseRequest,
+      avoidTolls: true
+    };
+    
+    // 有料、高速道路を回避なしリクエスト
+    const noAvoidRequest = {
+      ...baseRequest
+    };
+    
+    
+    const requests = [
+      { request: noAvoidRequest, type: 'noAvoid' },
+      { request: avoidTollsRequest, type: 'avoidTolls' },
+      { request: avoidHighwaysRequest, type: 'avoidHighways' }
+    ];
+    
+    const promises = requests.map(({ request, type }) =>
+      new Promise((resolve, reject) => {
+        directionsService.route(request, (response, status) => {
+          if (status === 'OK') {
+            const route = response.routes[0];
+            let duration;
+            let durationSeconds;
+            if (route.legs[0].duration_in_traffic) {
+              duration = route.legs[0].duration_in_traffic.text;
+              durationSeconds = route.legs[0].duration.value;
+            } else {
+              duration = route.legs[0].duration.text;
+              durationSeconds = route.legs[0].duration.value;
+            }
+            const drivingMinutes = Math.ceil(durationSeconds / 60);
+            const drivingTime = duration.replace("hours", "時間").replace("mins", "分");
+            const textDistance = route.legs[0].distance.text; // 距離をstring型でkmで取得
+            const numberDistance = route.legs[0].distance.value; // 距離をメートルで取得
+            resolve({ type, drivingTime, textDistance, numberDistance, drivingMinutes });
+          } else {
+            reject('Directions request failed' + status);
+          }
+        });
+      })
+    );
+    
+    return Promise.all(promises);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const routeModal = document.getElementById("route-modal");
+  const routeContent = document.getElementById("route-content");
+  const buttons = document.querySelectorAll("button[data-lat][data-lng]");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const lat = parseFloat(button.getAttribute("data-lat"));
+      const lng = parseFloat(button.getAttribute("data-lng"));
+      const location = { lat, lng };
+
+      // 現在地を取得（仮にグローバル変数 currentLocation を利用）
+      if (!window.currentLocation) {
+        alert("現在地が取得できません。位置情報を許可してください。");
+        return;
+      }
+
+      try {
+        const routeInfos = await getRoutes(location);
+
+        // ルート情報をモーダルに挿入
+        routeContent.innerHTML = `
+          <h2>ルート情報</h2>
+          <ul>
+            ${routeInfos.map(info => `
+              <li>
+                <strong>${info.type === "noAvoid" ? "有料道路を使用" : info.type === "avoidTolls" ? "有料道路を回避" : "下道を使用"}</strong>
+                <p>所要時間: ${info.drivingTime}</p>
+                <p>距離: ${info.textDistance}</p>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank">
+                  Google Mapsで確認
+                </a>
+              </li>
+            `).join("")}
+          </ul>
+        `;
+
+        // モーダルを表示
+        routeModal.showModal();
+      } catch (error) {
+        console.error("ルート情報の取得に失敗しました:", error);
+        alert("ルート情報の取得に失敗しました。");
+      }
+    });
+  });
+});
+
+
 
   // 現在地を示す青丸のアイコン
   function setCurrentLocationMarker(currentLocation, map){
@@ -167,5 +366,54 @@
         },
     });
   }
+
+  /*
+  document.addEventListener("DOMContentLoaded", () => {
+  const routeModal = document.getElementById("route-modal");
+  const routeContent = document.getElementById("route-content");
+  const buttons = document.querySelectorAll("button[data-lat][data-lng]");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const lat = parseFloat(button.getAttribute("data-lat"));
+      const lng = parseFloat(button.getAttribute("data-lng"));
+      const location = { lat, lng };
+
+      // 現在地を取得（仮にグローバル変数 currentLocation を利用）
+      if (!window.currentLocation) {
+        alert("現在地が取得できません。位置情報を許可してください。");
+        return;
+      }
+
+      try {
+        const routeInfos = await getRoutes(location);
+
+        // ルート情報をモーダルに挿入
+        routeContent.innerHTML = `
+          <h2>ルート情報</h2>
+          <ul>
+            ${routeInfos.map(info => `
+              <li>
+                <strong>${info.type === "noAvoid" ? "有料道路を使用" : info.type === "avoidTolls" ? "有料道路を回避" : "下道を使用"}</strong>
+                <p>所要時間: ${info.drivingTime}</p>
+                <p>距離: ${info.textDistance}</p>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank">
+                  Google Mapsで確認
+                </a>
+              </li>
+            `).join("")}
+          </ul>
+        `;
+
+        // モーダルを表示
+        routeModal.showModal();
+      } catch (error) {
+        console.error("ルート情報の取得に失敗しました:", error);
+        alert("ルート情報の取得に失敗しました。");
+      }
+    });
+  });
+});
+*/
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=geometry&callback=initMap"></script>
