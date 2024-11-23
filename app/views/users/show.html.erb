@@ -1,10 +1,24 @@
 <div class="bg-base-200 ">
   <ul class="menu items-center ">
-    <h2 class="">マイページメニュー</h2>
+    <h2 class="text-xl py-8">マイページメニュー</h2>
     <%= image_tag @user.image, size: "200x200" %>
-    <a>ユーザーネーム： <%= @user.name %></a>
-    <li><%= link_to "お気に入り一覧", favorites_destinations_path %></li>
-    <li><%= link_to "後で行きたい一覧", future_visits_destinations_path %></li>
+    <p>ユーザーネーム： <%= @user.name %></p>
+    <div class="py-4">
+      <li>
+        <%= link_to favorites_destinations_path do %>
+          <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="36px" height="36px" viewBox="0 0 512 512" style="width: 28px; height: 28px; opacity: 1;" xml:space="preserve">
+          <style type="text/css">.st0{fill:#4B4B4B;}</style><g><path class="st0" d="M473.984,74.248c-50.688-50.703-132.875-50.703-183.563,0c-17.563,17.547-29.031,38.891-34.438,61.391c-5.375-22.5-16.844-43.844-34.406-61.391c-50.688-50.703-132.875-50.703-183.563,0c-50.688,50.688-50.688,132.875,0,183.547l217.969,217.984l218-217.984C524.672,207.123,524.672,124.936,473.984,74.248z" style="fill: rgb(255, 0, 0);"></path></g></svg>
+          お気に入り一覧
+        <% end %>
+      </li>
+      <li>
+        <%= link_to future_visits_destinations_path do %>
+        <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="width: 27px; height: 28px; opacity: 1;" xml:space="preserve">
+        <style type="text/css">.st0{fill:#4B4B4B;}</style><g><polygon class="st0" points="20.317,0 20.317,512 256,426.452 491.683,512 491.683,0 	" style="fill: rgb(40, 212, 52);"></polygon></g></svg>
+        後で行きたい一覧
+        <% end %>
+      </li>
+    </div>
   </ul>
 </div>
 
