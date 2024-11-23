@@ -71,6 +71,7 @@
   const destinationLat = Number("<%= @destination.latitude %>")
   const destinationLng = Number("<%= @destination.longitude %>")
   const setLocation = { lat: destinationLat, lng: destinationLng };
+  let currentLocation
   
   console.log(`destinationLat${destinationLat}`)
   console.log(`destinationLng${destinationLng}`)
@@ -98,18 +99,18 @@
               mapTypeControl: true,
             }
           );
-          // setCurrentLocationMarker(currentLocation, map);
-          // setDestinationMarker(setLocation, map)
+
           streetViewService(setLocation)
-
           directionsService = new google.maps.DirectionsService();
+          directionsRenderers = {
+            noAvoid: new google.maps.DirectionsRenderer({ map }),
+            avoidTolls: new google.maps.DirectionsRenderer({ map }),
+            avoidHighways: new google.maps.DirectionsRenderer({ map }),
+          };
 
-  // 各条件に対応する DirectionsRenderer を作成
-  directionsRenderers = {
-    noAvoid: new google.maps.DirectionsRenderer({ map }),
-    avoidTolls: new google.maps.DirectionsRenderer({ map }),
-    avoidHighways: new google.maps.DirectionsRenderer({ map }),
-  };
+          // ページ読み込み時にルートを表示
+          displayRoutes(setLocation);
+          toggleRoute("avoidHighways");
         },
         function(error) {
           console.error("Error occurred. Error code: " + error.code);
@@ -168,6 +169,31 @@
       directionsService.route(requests[key], (response, status) => {
         if (status === 'OK') {
           directionsRenderers[key].setDirections(response);
+
+          // マーカーを設定
+        const leg = response.routes[0].legs[0];
+        if (key === "avoidHighways") {
+          // 現在地のマーカー
+          new google.maps.Marker({
+            position: leg.start_location,
+            map: map,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: "#115EC3",
+              fillOpacity: 1,
+              strokeColor: "white",
+              strokeWeight: 2,
+              scale: 7,
+            },
+          });
+
+          // 目的地のマーカー
+          new google.maps.Marker({
+            position: leg.end_location,
+            map: map,
+            icon: null,
+          });
+        }
         } else {
           console.error(`ルート取得失敗: ${key}, ステータス: ${status}`);
         }});
@@ -184,29 +210,6 @@
       }
     });
   }
-
-  // 「行ってみる」ボタンのイベントリスナーを設定
-  document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const lat = parseFloat(button.getAttribute("data-lat"));
-        const lng = parseFloat(button.getAttribute("data-lng"));
-        const location = { lat, lng };
-
-        displayRoutes(location); // ルートを取得して地図に描画
-
-        // デフォルトで有料道路を使用したルートを表示
-        toggleRoute("noAvoid");
-      });
-    });
-
-    // 切り替えボタンのイベントリスナーを設定
-    document.getElementById("toggle-noAvoid").addEventListener("click", () => toggleRoute("noAvoid"));
-    document.getElementById("toggle-avoidTolls").addEventListener("click", () => toggleRoute("avoidTolls"));
-    document.getElementById("toggle-avoidHighways").addEventListener("click", () => toggleRoute("avoidHighways"));
-  });
 
   /*
   function setDestinationMarker(setLocation, map){
@@ -234,13 +237,11 @@
 
   function getRoutes(location, callback) {
     const directionsService = new google.maps.DirectionsService();
-    const origin = currentLocation;  // ユーザーの現在地
-    const destination = location; //'目的地の住所'
   
     // 共通のリクエスト
     const baseRequest = {
-      origin: origin,
-      destination: destination,
+      origin: currentLocation,
+      destination: setLocation,
       travelMode: 'DRIVING',
       drivingOptions: {
         departureTime: new Date(Date.now() + 5000),  // 現在の時刻だと適切に処理されない可能性があるため現在時刻の5秒後を指定
@@ -302,6 +303,29 @@
     return Promise.all(promises);
   }
 
+
+  
+  // ページ読み込み時の処理 (DOMContentLoadedリファクタリング要)
+  document.addEventListener("DOMContentLoaded", () => {
+    // 初期ルートを表示
+    displayRoutes(setLocation);
+    toggleRoute("avoidHighways")
+
+    // 「行ってみる」ボタンのイベントリスナー
+    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const location = { destinationLat, destinationLng };
+      });
+    });
+
+    // 切り替えボタンのイベントリスナーを設定(調整中)
+    document.getElementById("toggle-avoidHighways").addEventListener("click", () => toggleRoute("avoidHighways"));
+    // document.getElementById("toggle-avoidTolls").addEventListener("click", () => toggleRoute("avoidTolls"));
+    // document.getElementById("toggle-noAvoid").addEventListener("click", () => toggleRoute("noAvoid"));
+  });
+
+ 
   document.addEventListener("DOMContentLoaded", () => {
   const routeModal = document.getElementById("route-modal");
   const routeContent = document.getElementById("route-content");
@@ -309,30 +333,21 @@
 
   buttons.forEach((button) => {
     button.addEventListener("click", async () => {
-      const lat = parseFloat(button.getAttribute("data-lat"));
-      const lng = parseFloat(button.getAttribute("data-lng"));
-      const location = { lat, lng };
-
-      // 現在地を取得（仮にグローバル変数 currentLocation を利用）
-      if (!window.currentLocation) {
-        alert("現在地が取得できません。位置情報を許可してください。");
-        return;
-      }
-
       try {
-        const routeInfos = await getRoutes(location);
+        const routeInfos = await getRoutes(setLocation);
 
         // ルート情報をモーダルに挿入
         routeContent.innerHTML = `
-          <h2>ルート情報</h2>
+          <h2 class="text-xl">ルート情報</h2>
+          <p>※実際の交通規制に従って走行してください</p>
           <ul>
             ${routeInfos.map(info => `
-              <li>
-                <strong>${info.type === "noAvoid" ? "有料道路を使用" : info.type === "avoidTolls" ? "有料道路を回避" : "下道を使用"}</strong>
+              <li class="py-4 text-center">
+                <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
                 <p>所要時間: ${info.drivingTime}</p>
                 <p>距離: ${info.textDistance}</p>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank">
-                  Google Mapsで確認
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
+                  このルートで行く
                 </a>
               </li>
             `).join("")}
@@ -349,71 +364,5 @@
   });
 });
 
-
-
-  // 現在地を示す青丸のアイコン
-  function setCurrentLocationMarker(currentLocation, map){
-    new google.maps.Marker({
-        position: currentLocation,
-        map: map,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: '#115EC3',
-          fillOpacity: 1,
-          strokeColor: 'white',
-          strokeWeight: 2,
-          scale: 7
-        },
-    });
-  }
-
-  /*
-  document.addEventListener("DOMContentLoaded", () => {
-  const routeModal = document.getElementById("route-modal");
-  const routeContent = document.getElementById("route-content");
-  const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-
-  buttons.forEach((button) => {
-    button.addEventListener("click", async () => {
-      const lat = parseFloat(button.getAttribute("data-lat"));
-      const lng = parseFloat(button.getAttribute("data-lng"));
-      const location = { lat, lng };
-
-      // 現在地を取得（仮にグローバル変数 currentLocation を利用）
-      if (!window.currentLocation) {
-        alert("現在地が取得できません。位置情報を許可してください。");
-        return;
-      }
-
-      try {
-        const routeInfos = await getRoutes(location);
-
-        // ルート情報をモーダルに挿入
-        routeContent.innerHTML = `
-          <h2>ルート情報</h2>
-          <ul>
-            ${routeInfos.map(info => `
-              <li>
-                <strong>${info.type === "noAvoid" ? "有料道路を使用" : info.type === "avoidTolls" ? "有料道路を回避" : "下道を使用"}</strong>
-                <p>所要時間: ${info.drivingTime}</p>
-                <p>距離: ${info.textDistance}</p>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank">
-                  Google Mapsで確認
-                </a>
-              </li>
-            `).join("")}
-          </ul>
-        `;
-
-        // モーダルを表示
-        routeModal.showModal();
-      } catch (error) {
-        console.error("ルート情報の取得に失敗しました:", error);
-        alert("ルート情報の取得に失敗しました。");
-      }
-    });
-  });
-});
-*/
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=geometry&callback=initMap"></script>
