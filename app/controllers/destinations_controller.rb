@@ -2,6 +2,7 @@ class DestinationsController < ApplicationController
   before_action :require_login, only: %i[favorites]
   require 'open-uri'
   require 'base64'
+  helper_method :prepare_meta_tags
 
   def create
     place_data = JSON.parse(params[:place_data])
@@ -27,6 +28,7 @@ class DestinationsController < ApplicationController
 
   def show
     @destination = Destination.find(params[:id])
+    prepare_meta_tags(@destination)
   end
 
   def favorites
@@ -39,4 +41,22 @@ class DestinationsController < ApplicationController
 
   private
 
+  def prepare_meta_tags(destination)
+    ## このimage_urlにMiniMagickで設定したOGPの生成した合成画像を代入する
+        image_url = "#{request.base_url}/images/ogp.png?text=#{CGI.escape(destination.name)}"
+        set_meta_tags og: {
+                        site_name: 'Ride finder',
+                        title: destination.name,
+                        description: 'ユーザーによるツーリングスポットの投稿です',
+                        type: 'website',
+                        url: request.original_url,
+                        image: image_url,
+                        locale: 'ja-JP'
+                      },
+                      twitter: {
+                        card: 'summary_large_image',
+                        site: '@https://x.com/totototo0324',
+                        image: image_url
+                      }
+      end
 end
