@@ -471,13 +471,11 @@ function addPlaces(places, map) {
             li.appendChild(routeLink);
           });
 
-          li.classList.add('hover-no-bg')
-
+          // 詳細ページへのリンク作成
           const button = document.createElement("button");
           button.textContent = "詳細を見る";
           button.dataset.placeId = place.place_id;
           button.addEventListener("click", () => {
-            // フォーム要素を作成
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '/destinations';
