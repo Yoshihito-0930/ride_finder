@@ -1,17 +1,18 @@
-<div class="min-h-screen menu items-center z-10 bg-base-200">
-  <div class="flex-col md:flex-row justify-center gap-4 py-10">
-    <div class="card w-96 bg-base-100 shadow-xl py-10">
+<div class="menu items-center z-10 bg-base-200">
+  <div class="flex-col md:flex-row justify-center gap-8">
+    <div class="card w-96 bg-base-100 shadow-xl py-4 my-4">
       <div class="card-body">
-        <h2 class="card-title">ツーリングスポットを探そう！</h2>
+        <h2 class="card-title pb-4">ツーリングスポットを探そう！</h2>
           <div>
             <p>画面上部のツーリングスポットを探すから、現在地から探したいカテゴリーと検索範囲を指定してツーリングスポットを見つけよう。</p>
-            <p>※実際の交通規制に従って走行してください</p>
           </div>
       </div>
-      <!-- <figure><img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg" alt="Shoes" /></figure> -->
+      <figure class="px-8">
+        <%= image_tag 'search_tutorial.png', class: "rounded-xl" %>
+      </figure>
     </div>
     <% if !logged_in? %>
-      <div class="card bg-base-100 w-96 shadow-xl">
+      <div class="card bg-base-100 w-96 shadow-xl my-4">
         <!--<figure class="px-10 pt-10">
           <img
           src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
@@ -19,10 +20,10 @@
           class="rounded-xl" />
         </figure>  -->
         <div class="card-body items">
-          <h2 class="card-title">ログインして便利な機能を使ってみよう</h2>
-          <p>LINE・Googleアカウントを使って簡単にログインが出来ます。ログインすると見つけたツーリングスポットを保存していつでも行けるように出来ます。</p>
+          <h2 class="card-title pb-4">ログインして便利な機能を使ってみよう</h2>
+          <p>ログインすると見つけたツーリングスポットにいつでも行けるように保存することが出来ます。ログインはLINE・Googleアカウントを使って簡単にログインすることが出来ます。</p>
           <div class="card-actions justify-center">
-            <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn" %>
+            <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn mt-4" %>
           </div>
         </div>
       </div>

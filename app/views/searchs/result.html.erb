@@ -380,6 +380,8 @@ function getRoutes(location, callback) {
   return Promise.all(promises);
 }
 
+
+/* カードのほうに問題がなければ削除
 function addPlaces(places, map) {
   const placesList = document.getElementById("places");
 
@@ -471,13 +473,11 @@ function addPlaces(places, map) {
             li.appendChild(routeLink);
           });
 
-          li.classList.add('hover-no-bg')
-
+          // 詳細ページへのリンク作成
           const button = document.createElement("button");
           button.textContent = "詳細を見る";
           button.dataset.placeId = place.place_id;
           button.addEventListener("click", () => {
-            // フォーム要素を作成
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '/destinations';
@@ -495,7 +495,7 @@ function addPlaces(places, map) {
             placeDataInput.value = JSON.stringify(placeDataWithImage); 
             form.appendChild(placeDataInput);
             
-            // CSRF トークンを追加
+            // CSRFトークンを追加
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
             const csrfTokenInput = document.createElement('input');
             csrfTokenInput.type = 'hidden';
@@ -503,7 +503,7 @@ function addPlaces(places, map) {
             csrfTokenInput.value = csrfToken;
             form.appendChild(csrfTokenInput);
             
-            // フォームを body に追加して送信
+            // フォームをbodyに追加して送信
             document.body.appendChild(form);
             form.submit();
           });
@@ -544,7 +544,190 @@ function addPlaces(places, map) {
     }
   }
 }
+*/
 
+
+function addPlaces(places, map) {
+  const placesList = document.getElementById("places");
+
+  if (Array.isArray(places) && places.length !== 0) {
+    places.forEach(place => {
+      if (place.geometry && place.geometry.location) {
+        const location = place.geometry.location;
+
+        // ルート情報を取得
+        getRoutes(location).then(routeInfos => {
+          // 条件を満たさない場合はスキップ
+          const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
+          const drivingMinutes = noAvoidRoute.drivingMinutes;
+          const numberDistance = noAvoidRoute.numberDistance;
+
+          if ((timeLimit && drivingMinutes > timeLimit) || 
+              (checkConditionDistance && numberDistance > radius)) {
+            return;
+          }
+
+          // マーカーを作成して地図に表示
+          const marker = new google.maps.Marker({
+            map, // マーカーを表示する地図オブジェクト
+            title: place.name,
+            position: location, // マーカーの位置（緯度・経度）
+          });
+  
+          // 情報ウィンドウの作成
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<strong>${place.name}</strong>`, // マーカーに関連付ける情報
+          });
+  
+          // マーカーがクリックされたときに情報ウィンドウを表示
+          marker.addListener("click", function () {
+            if (currentInfoWindow) {
+              currentInfoWindow.close(); // 以前のウィンドウを閉じる
+            }
+            infoWindow.open(map, marker);
+            currentInfoWindow = infoWindow; // 現在のウィンドウを更新
+          });
+
+          // カード要素を作成
+          const card = document.createElement("div");
+          card.className = "card card-compact bg-base-100 shadow-xl my-4 w-112";
+
+          // 画像
+          const figure = document.createElement("figure");
+          const img = document.createElement("img");
+          if (place.photos && place.photos.length > 0) {
+            img.src = place.photos[0].getUrl({ maxWidth: 400, maxHeight: 300 });
+          } else {
+            img.src = "/path/to/no_image.svg"; // 画像がない場合
+          }
+          img.className = "rounded-xl";
+          figure.appendChild(img);
+          card.appendChild(figure);
+
+          // カード本文
+          const cardBody = document.createElement("div");
+          cardBody.className = "card-body";
+
+          // 名前
+          const title = document.createElement("h2");
+          title.className = "card-title";
+          title.textContent = place.name;
+          cardBody.appendChild(title);
+
+          // 住所
+          if (place.formatted_address) {
+            const address = document.createElement("p");
+            address.textContent = place.formatted_address.replace("日本、", "");
+            cardBody.appendChild(address);
+          }
+
+          // 評価
+          if (place.rating) {
+            const rating = document.createElement("p");
+            rating.textContent = `評価☆ ${place.rating} (レビュー件数: ${place.user_ratings_total}件)`;
+            cardBody.appendChild(rating);
+          }
+
+          // ルート情報をカードに追加
+          routeInfos.forEach(info => {
+            const routeInfo = document.createElement("p");
+            let routeTypeLabel = '';
+            switch (info.type) {
+              case 'noAvoid':
+                routeTypeLabel = "有料道路";
+                break;
+              case 'avoidTolls':
+                routeTypeLabel = "有料道路を回避";
+                break;
+              case 'avoidHighways':
+                routeTypeLabel = "下道のみ";
+                break;
+            }
+            routeInfo.textContent = `${routeTypeLabel}: 所要時間 ${info.drivingTime} (距離: 約${info.textDistance})`;
+            routeInfo.className = "text-sm text-gray-600 mt-2";
+            cardBody.appendChild(routeInfo);
+          });
+
+          // 詳細リンクボタン
+          const detailsButton = document.createElement("button");
+          detailsButton.className = "btn";
+          detailsButton.textContent = "詳細を見る";
+          detailsButton.addEventListener("click", () => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/destinations';
+
+            // データ送信用hiddenフィールド
+            const placeDataInput = document.createElement('input');
+            placeDataInput.type = 'hidden';
+            placeDataInput.name = 'place_data';
+            const placeDataWithImage = {
+              ...place,
+              photo_url: place.photos && place.photos.length > 0 ? 
+                          place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 }) : null
+            };
+            placeDataInput.value = JSON.stringify(placeDataWithImage);
+            form.appendChild(placeDataInput);
+
+            // CSRFトークンを追加
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'authenticity_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            document.body.appendChild(form);
+            form.submit();
+          });
+          cardBody.appendChild(detailsButton);
+
+          // カードをリストに追加
+          card.appendChild(cardBody);
+          placesList.appendChild(card);
+        }).catch(error => console.error(error));
+      }
+    });
+  } else {
+    console.log("addPlaces elseになっている");
+    const li = document.createElement("li");
+    const message = document.createElement("p");
+
+    if (!places || !Array.isArray(places)) {
+      // 現在地が取得できない場合
+      console.log("現在地が取得できないため、placesは無効");
+      message.textContent = "現在地が取得できませんでした。お使いのブラウザの位置情報の取得を許可してください。";
+      li.appendChild(message);
+
+      // 各ブラウザごとの設定方法リンクを追加
+      const chromeLink = document.createElement("a");
+      chromeLink.href = "https://support.google.com/chrome/answer/142065?hl=ja&co=GENIE.Platform%3DiOS&oco=1";
+      chromeLink.target = "_blank";
+      chromeLink.textContent = "Google Chromeを使用している方はこちら";
+      li.appendChild(chromeLink);
+
+      const safariLink = document.createElement("a");
+      safariLink.href = "https://ssl.help.tsite.jp/faq/show/59512?site_domain=qa-tsite";
+      safariLink.target = "_blank";
+      safariLink.textContent = "Safariを使用している方はこちら";
+      li.appendChild(safariLink);
+
+    } else if (places.length === 0) {
+      // 検索条件に一致する結果がない場合
+      console.log("条件に一致する候補地が見つからない");
+      message.textContent = "検索条件に該当する候補地がありません。条件を変更して再検索してください。";
+      li.appendChild(message);
+
+    } else {
+      // その他の予期しないエラー（補足的に追加）
+      console.log("予期しないエラーが発生しました");
+      message.textContent = "予期しないエラーが発生しました。もう一度お試しください。";
+      li.appendChild(message);
+    }
+    // リストにメッセージを追加
+    placesList.appendChild(li);
+  }
+}
 
 </script>
 <script async src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
