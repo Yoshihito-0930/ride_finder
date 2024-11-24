@@ -2,31 +2,7 @@
   <h2 class="text-lg menu items-center">後で行きたい一覧</h2>
   <div class="bg-base-200 menu items-center">
     <% if @future_visit_destinations.present? %>
-      <% @future_visit_destinations.each do |destination| %>
-        <div id="destination-id-<%= destination.id %>">
-          <div class="card card-compact bg-base-100 w-96 shadow-xl my-4">
-            <figure>
-              <%= link_to destination_path(destination) do %>
-                <% if destination.image.present? %>
-                  <li><%= image_tag "data:image/jpeg;base64,#{destination.image}" %></li>
-                <% end %>
-              <% end %>
-            </figure>
-            <div class="card-body">
-              <%= link_to destination_path(destination) do %>
-                <h2 class="card-title"><%= destination.name %></h2>
-              <% end %>
-              <p><%= destination.address %></p>
-              <% if destination.rating.present? %>
-                <li>★<%= destination.rating %>(レビュー件数:<%= destination.user_ratings_total%>件)</li>
-              <% end %>
-              <div class="card-actions justify-end">
-                <button class="btn">詳細を見る</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
+    <%= render 'shared/destinations', destinations: @future_visit_destinations %>
     <% else %>
       <p>後で行くに登録されたスポットがありません</p>
     <% end %>

@@ -1,6 +1,6 @@
 <header>
   <div class="navbar bg-base-300 ">
-    <div class="flex-1 px-2">
+    <div class="flex-1">
       <%= link_to '/', class: 'navbar-brand' do %>
         <%= image_tag 'ride_finder_logo.png', size:'60x60' %>
       <% end %>
@@ -8,7 +8,7 @@
     <button class="btn" onclick="my_modal_2.showModal()">ツーリングスポットを探す</button>
     <dialog id="my_modal_2" class="modal">
       <div class="modal-box">
-        <h3 class="font-bold text-lg">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
+        <h3 class="font-bold text-lg pb-4">探したいツーリングスポットのカテゴリーを選択して下さい</h3>
         <div>
           <%= form_with url: searchs_result_path, method: :get, local: true do |form| %>
             <div class="pb-4">
@@ -40,7 +40,7 @@
         <button>close</button>
       </form>
     </dialog>
-    <div class="flex-none flex justify-end px-5 z-50">
+    <div class="flex-none flex justify-end px-2 z-50">
         <%= button_to "ログイン", login_path, method: :get, class: "btn btn-ghost rounded-btn" %>
     </div>
   </div>

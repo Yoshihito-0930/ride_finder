@@ -2,33 +2,7 @@
   <h2 class="text-lg menu items-center">お気に入り一覧</h2>
   <div class="bg-base-200 menu items-center">
     <% if @favorite_destinations.present? %>
-      <% @favorite_destinations.each do |destination| %>
-        <div id="destination-id-<%= destination.id %>">
-          <div class="card card-compact bg-base-100 w-96 shadow-xl my-4">
-            <figure>
-              <%= link_to destination_path(destination) do %>
-                <% if destination.image.present? %>
-                  <li><%= image_tag "data:image/jpeg;base64,#{destination.image}" %></li>
-                <% else %>
-                  <li><%= image_tag 'no_image.svg', size:'400x300' %></li>
-                <% end %>
-              <% end %>
-            </figure>
-            <div class="card-body">
-              <%= link_to destination_path(destination) do %>
-                <h2 class="card-title"><%= destination.name %></h2>
-              <% end %>
-              <p><%= destination.address %></p>
-              <% if destination.rating.present? %>
-                <li>★<%= destination.rating %>(レビュー件数:<%= destination.user_ratings_total%>件)</li>
-              <% end %>
-              <div class="card-actions justify-end">
-                <%= button_to "詳細", destination_path(destination), class: "btn", method: :get%>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
+      <%= render 'shared/destinations', destinations: @favorite_destinations %>
     <% else %>
       <p>お気に入りに登録されたスポットがありません</p>
     <% end %>
