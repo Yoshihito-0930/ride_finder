@@ -11,10 +11,10 @@ Rails.application.routes.draw do
   get 'auth/failure', to: 'sessions#failure'
   get 'logout', to: 'sessions#destroy'
   
-  # get 'search_results', to: 'search_results#index'
   get 'searchs/result', to: 'searchs#result'
+
+  get 'images/ogp.png', to: 'images#ogp', as: 'images_ogp'
   
-  # resouces :destinations, only: %i[show]
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
   resources :destinations, only: %i[create show] do

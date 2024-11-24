@@ -390,7 +390,7 @@ function addPlaces(places, map) {
 
         // ルート情報が取得された後に実行するコールバック関数
 
-        //　修正が必要　結果が返ってきていたらここでreturnしても検索結果になにも表示されない。 if文の前に調べて検索結果に該当項目がないことを追加が必要
+        // 修正が必要　結果が返ってきていたらここでreturnしても検索結果になにも表示されない。 if文の前に調べて検索結果に該当項目がないことを追加が必要
         getRoutes(location).then(routeInfos => {
           const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
           const drivingMinutes = noAvoidRoute.drivingMinutes;
@@ -467,9 +467,7 @@ function addPlaces(places, map) {
             } else if (info.type === 'avoidTolls') {
               avoidParams = 'tolls';
             }
-            routeLink.href = `https://www.google.com/maps/dir/?api=1&destination=${place.name}&travelmode=driving&avoid=${avoidParams}`;
-            routeLink.target = "_blank";
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路を使って行く' : info.type === 'avoidTolls' ? '有料道路を回避して行く' : '下道で行く'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
+            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路を使用' : info.type === 'avoidTolls' ? '有料道路を回避' : '下道のみ'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
             li.appendChild(routeLink);
           });
 
