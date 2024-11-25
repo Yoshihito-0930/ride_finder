@@ -80,6 +80,7 @@ Rails.application.configure do
 
   config.assets.compile = false
   config.assets.debug = false
+  config.exceptions_app = self.routes
 
   # Use a different logger for distributed setups.
   # require "syslog/logger"

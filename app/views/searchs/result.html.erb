@@ -546,7 +546,7 @@ function addPlaces(places, map) {
 }
 */
 
-
+// ページ上に候補地を表示
 function addPlaces(places, map) {
   const placesList = document.getElementById("places");
 
@@ -557,7 +557,6 @@ function addPlaces(places, map) {
 
         // ルート情報を取得
         getRoutes(location).then(routeInfos => {
-          // 条件を満たさない場合はスキップ
           const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
           const drivingMinutes = noAvoidRoute.drivingMinutes;
           const numberDistance = noAvoidRoute.numberDistance;
@@ -567,7 +566,7 @@ function addPlaces(places, map) {
             return;
           }
 
-          // マーカーを作成して地図に表示
+          // マーカーを地図に表示
           const marker = new google.maps.Marker({
             map, // マーカーを表示する地図オブジェクト
             title: place.name,
