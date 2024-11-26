@@ -1,4 +1,4 @@
-<header class='z-50 relative'>
+<header class='z-50 relative y-4'>
   <div class='navbar bg-base-300 z-50'>
     <div class='flex-1'>
       <%= link_to '/', class: 'navbar-brand' do %>
@@ -45,7 +45,12 @@
         <li>
           <details class="relative z-50 px-2">
             <summary>メニュー</summary>
-            <%= render "shared/menu_items" %>
+            <ul class="bg-base-100 rounded-t-none p-2 z-50 relative">
+              <li><%= link_to "後で行きたい", future_visits_destinations_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "お気に入り", favorites_destinations_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "マイページ", users_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "btn btn-ghost" %></li>
+            </ul>
           </details>
         </li>
       </ul>
