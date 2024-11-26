@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "future-visit-button-for-destination-#{@destination.id}" do %>
+  <%= render 'destinations/not_future_visit', destination: @destination %>
+<% end %>

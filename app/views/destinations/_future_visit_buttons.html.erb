@@ -1,0 +1,5 @@
+<% if current_user.future_visit?(destination) %>
+  <%= render 'not_future_visit', { destination: destination } %>
+<% else %>
+  <%= render 'future_visit', { destination: destination } %>
+<% end %>

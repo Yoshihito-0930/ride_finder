@@ -1,0 +1,3 @@
+<%= link_to future_visit_path(id: destination.id), id: "not-future-visit-button-for-destination-#{destination.id}", data: { turbo_method: :delete }, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-on"><%= image_tag "future_visit_icon.svg", size:'28x28' %></div>
+<% end %>
