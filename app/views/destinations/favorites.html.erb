@@ -1,10 +1,10 @@
 <div class="pt-3 mb-3">
-  <h2 class="text-lg menu items-center">お気に入り一覧</h2>
-  <div class="bg-base-200 menu items-center">
+  <h2 class="text-xl menu items-center pt-10">お気に入り一覧</h2>
+  <div class="bg-base-100 menu items-center min-h-screen">
     <% if @favorite_destinations.present? %>
       <%= render 'shared/destinations', destinations: @favorite_destinations %>
     <% else %>
-      <p>お気に入りに登録されたスポットがありません</p>
+      <p class="pt-10">お気に入りに登録されたスポットがありません</p>
     <% end %>
   </div>
 </div>

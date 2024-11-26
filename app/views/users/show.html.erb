@@ -1,17 +1,17 @@
-<div class="bg-base-200 ">
+<div class="bg-base-200 pb-10">
   <ul class="menu items-center ">
-    <h2 class="text-xl py-8">マイページメニュー</h2>
+    <h2 class="text-2xl py-10">マイページメニュー</h2>
     <%= image_tag @user.image, size: "200x200" %>
-    <p>ユーザーネーム： <%= @user.name %></p>
+    <p class="text-lg">ユーザーネーム： <%= @user.name %></p>
     <div class="py-4">
       <li>
-        <%= link_to favorites_destinations_path do %>
+        <%= link_to favorites_destinations_path, class: "my-2" do %>
           <%= image_tag "favorite_mark.svg", size:'28x28' %>
           お気に入り一覧
         <% end %>
       </li>
       <li>
-        <%= link_to future_visits_destinations_path do %>
+        <%= link_to future_visits_destinations_path, class: "my-2" do %>
         <%= image_tag "future_visit_icon.svg", size:'28x28' %>
         後で行きたい一覧
         <% end %>
@@ -19,5 +19,3 @@
     </div>
   </ul>
 </div>
-
-

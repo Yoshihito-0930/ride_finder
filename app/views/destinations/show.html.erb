@@ -17,7 +17,7 @@
           <div class="favorite flex-none flex justify-end">
             <% if logged_in? %>
               <%= render 'shared/future_visit_button', destination: @destination %>
-              <%= render 'shared/favorite', destination: @destination %>
+              <%= render 'favorite_buttons', destination: @destination %>
             <% end %>
             <div>
               <% prepare_meta_tags @destination %>

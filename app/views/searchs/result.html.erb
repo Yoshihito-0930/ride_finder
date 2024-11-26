@@ -272,7 +272,7 @@ function performNearbySearch(currentLocation) {
         }else{
           if (textCategory === "道の駅"){
             filteredResults = results.filter(result => {
-              return result.name.includes('道の駅') && !result.name.includes('駐車場') && !result.name.includes('ドッグラン')&& !result.name.includes('駐輪場')&& !result.name.includes('トイレ')&& !result.name.includes('レストラン')&& !result.name.includes('食堂')&& !result.name.includes('本店');
+              return result.name.includes('道の駅') && !result.name.includes('駐車場') && !result.name.includes('ドッグラン')&& !result.name.includes('駐輪場')&& !result.name.includes('トイレ')&& !result.name.includes('レストラン')&& !result.name.includes('食堂')&& !result.name.includes('本店')&& !result.name.includes('案内所');
             });
           }else {
             filteredResults = results;
