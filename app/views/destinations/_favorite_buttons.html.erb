@@ -1,0 +1,5 @@
+<% if current_user.favorite?(destination) %>
+   <%= render 'unfavorite', { destination: destination } %>
+<% else %>
+   <%= render 'favorite', { destination: destination } %>
+<% end %>

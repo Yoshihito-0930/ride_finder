@@ -1,10 +1,10 @@
 <div class="pt-3 mb-3">
-  <h2 class="text-lg menu items-center">後で行きたい一覧</h2>
-  <div class="bg-base-200 menu items-center">
+  <h2 class="text-xl menu items-center pt-10">後で行きたい一覧</h2>
+  <div class="bg-base-100 menu items-center min-h-screen">
     <% if @future_visit_destinations.present? %>
-    <%= render 'shared/destinations', destinations: @future_visit_destinations %>
+      <%= render 'shared/destinations', destinations: @future_visit_destinations %>
     <% else %>
-      <p>後で行くに登録されたスポットがありません</p>
+      <p class="pt-10">後で行くに登録されたスポットがありません</p>
     <% end %>
   </div>
 </div>

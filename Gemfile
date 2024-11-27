@@ -35,6 +35,8 @@ gem 'httparty'
 gem 'mini_magick'
 gem 'meta-tags', require: 'meta_tags'
 
+gem 'line-bot-api'
+
 gem 'rails-i18n'
 gem 'ransack'
 

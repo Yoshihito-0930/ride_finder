@@ -1,0 +1,3 @@
+<%= link_to favorite_destination_path(id: destination.id), id: "unfavorite-button-for-destination-#{destination.id}", data: { turbo_method: :delete }, class: "btn btn-ghost btn-sm" do %>
+  <div class="swap-on"><%= image_tag "favorite_mark.svg", size:'28x28' %></div>
+<% end %>
