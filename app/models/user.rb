@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_many :future_visits, dependent: :destroy
   has_many :favorites, through: :favorite_destinations, source: :destination
   has_many :upcoming_destinations, through: :future_visits, source: :destination
-  
+
   validates :name, presence: true
   validates :email, presence: true
   validates :uid, presence: true, uniqueness: { scope: :provider, message: 'uidとproviderの組み合わせは既に存在します' }
