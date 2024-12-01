@@ -24,7 +24,7 @@
             
             <div id="value-distance" class="pb-4">
               <p>現在地から何km以内のツーリングスポットを探すか選択して下さい</p>
-              <%= form.label :distance_value, "探す範囲(km)", class:"hidden" %>
+              <%= form.label :distance_value, "探す範囲", class:"hidden" %>
               <%= form.select :distance_value, [30, 45, 60, 80, 100, 150].map { |v| ["#{v}km以内", v] },{}, {class: 'form-control select select-bordered  w-full max-w-xs'} %>
             </div>
             <div id="value-time" class="pb-4" style="display:none;">
