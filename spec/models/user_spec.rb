@@ -55,6 +55,5 @@ RSpec.describe User, type: :model do
       expect(invalid_user.errors[:uid]).to be_empty
       expect(invalid_user.errors[:provider]).to be_empty
     end
-
   end
 end
