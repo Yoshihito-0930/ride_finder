@@ -2,11 +2,9 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[show edit]
   before_action :require_login, only: %i[show edit]
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def update
     @user = current_user.boards.find(params[:id])
@@ -17,8 +15,6 @@ class UsersController < ApplicationController
       render :edit, status: :unprocessable_entity
     end
   end
-
-
 
   private
 

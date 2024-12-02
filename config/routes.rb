@@ -10,11 +10,11 @@ Rails.application.routes.draw do
   get 'auth/:provider/callback', to: 'sessions#create'
   get 'auth/failure', to: 'sessions#failure'
   get 'logout', to: 'sessions#destroy'
-  
+
   get 'searchs/result', to: 'searchs#result'
 
   get 'images/ogp.png', to: 'images#ogp', as: 'images_ogp'
-  
+
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
   resources :destinations, only: %i[create show] do

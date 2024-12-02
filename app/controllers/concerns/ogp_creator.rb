@@ -2,12 +2,12 @@ class OgpCreator
   require 'mini_magick'
   require 'stringio'
 
-  #動的OGPの実装予定 文字を入れるかは検討中
+  # 動的OGPの実装予定 文字を入れるかは検討中
 
-  BASE_IMAGE_PATH = './app/assets/images/default_share.png'
-  GRAVITY = 'center'
-  TEXT_POSITION = '0,0'
-  FONT = './app/assets/fonts/NotoSansJP-Thin.ttf'
+  BASE_IMAGE_PATH = './app/assets/images/default_share.png'.freeze
+  GRAVITY = 'center'.freeze
+  TEXT_POSITION = '0,0'.freeze
+  FONT = './app/assets/fonts/NotoSansJP-Thin.ttf'.freeze
   FONT_SIZE = 0
   INDENTION_COUNT = 16
   ROW_LIMIT = 8
@@ -24,7 +24,6 @@ class OgpCreator
     end
   end
 
-  private
   def self.prepare_text(text)
     text.to_s.scan(/.{1,#{INDENTION_COUNT}}/)[0...ROW_LIMIT].join("\n")
   end

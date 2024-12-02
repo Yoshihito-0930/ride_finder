@@ -28,5 +28,34 @@
         </div>
       </div>
     <% end %>
+      <div class="card bg-base-100 w-96 shadow-xl my-4">
+      <!--<figure class="px-10 pt-10">
+        <img
+        src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+        alt="Shoes"
+        class="rounded-xl" />
+      </figure>  -->
+      <div class="card-body items">
+        <h2 class="card-title pb-4">お気に入りに追加</h2>
+        <p>お気に入りに追加すると画面右上のメニューの「お気に入り」からいつでもツーリングスポットへアクセス出来ます。</p>
+        <div class="card-actions justify-center">
+          <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn mt-4" %>
+        </div>
+      </div>
+    </div>
+    <!--
+      <div class="card bg-base-100 w-96 shadow-xl my-4">
+        <div class="card-body items safety-info">
+          <h2 class="card-title pb-4">AIによる本日の交通安全情報</h2>
+          <div class="card-actions justify-center">
+            <% if @safety_info %>
+              <p><%= @safety_info %></p>
+            <% else %>
+              <p>交通安全情報は現在取得できません。</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    -->
   </div>
 </div> 

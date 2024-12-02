@@ -20,7 +20,8 @@ services:
       - bundle_data:/usr/local/bundle:cached
       - node_modules:/app/node_modules
     environment:
-      TZ: Asia/Tokyo
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/config/sturdy-device-422904-s9-bedb4c796965.json
+      - TZ=Asia/Tokyo
     ports:
       - "3000:3000"
     depends_on:

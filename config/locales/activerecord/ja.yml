@@ -21,4 +21,8 @@ ja:
           campground: "キャンプ場"
           viewpoint: "展望所"
           riders_cafe: "ライダーズカフェ"
+    errors:
+      messages:
+        taken: "はすでに存在します"
+        blank: "を入力してください"
 

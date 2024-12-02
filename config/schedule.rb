@@ -19,6 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every :day, at: '12:00 am' do
-  runner "DailySafetyTipJob.perform_now"
+every 1.day, at: '3:00 am' do
+  runner 'SafetyTip.generate_daily_safety_tip'
 end
