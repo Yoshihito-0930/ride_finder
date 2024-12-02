@@ -1,0 +1,71 @@
+name: Run rspec and rubocop
+
+on:
+  push:
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: appdb
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Set up database configuration
+        run: |
+          cp config/database.yml.ci config/database.yml
+
+      - name: Wait for Postgres to be ready
+        run: |
+          until pg_isready -h 127.0.0.1 -U postgres -d appdb; do
+            echo "Waiting for database to be ready..."
+            sleep 2
+          done
+
+      - name: Setup Database
+        run: |
+          bundle exec rails db:create RAILS_ENV=test
+          bundle exec rails db:migrate RAILS_ENV=test
+
+      - name: Run rspec
+        run: bundle exec rspec
+
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.3
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Run rubocop
+        run: bundle exec rubocop
