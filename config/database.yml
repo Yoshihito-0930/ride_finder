@@ -60,8 +60,8 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: appdb_test
-  host: 127.0.0.1 # GitHub Actions 用に明示
+  database: appdb
+  host: localhost
   username: postgres
   password: <%= ENV['POSTGRES_PASSWORD'] %>
   port: 5432
