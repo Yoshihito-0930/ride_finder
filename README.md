@@ -68,4 +68,4 @@
 
 
 # ■ ER図
-[![Image from Gyazo](https://i.gyazo.com/1749643e17bb6ccb9574ac01e283c194.png)](https://gyazo.com/1749643e17bb6ccb9574ac01e283c194)
+[![Image from Gyazo](https://i.gyazo.com/6737c86e223b4c252f61210ee25dcce0.png)](https://gyazo.com/6737c86e223b4c252f61210ee25dcce0)
