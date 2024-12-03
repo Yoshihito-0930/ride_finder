@@ -2,15 +2,13 @@ class SessionsController < ApplicationController
   def new; end
 
   def create
-    begin
-      user = User.from_omniauth(request.env["omniauth.auth"])
-      session[:user_id] = user.id
-      flash[:success] = 'ログインしました'
-      redirect_to root_path
-    rescue OmniAuth::Strategies::OAuth2::CallbackError => e
-      flash[:alert] = 'ログインに失敗しました。再度お試しください。'
-      redirect_to login_path
-    end
+    user = User.from_omniauth(request.env['omniauth.auth'])
+    session[:user_id] = user.id
+    flash[:success] = 'ログインしました'
+    redirect_to root_path
+  rescue OmniAuth::Strategies::OAuth2::CallbackError
+    flash[:alert] = 'ログインに失敗しました。再度お試しください。'
+    redirect_to login_path
   end
 
   def destroy

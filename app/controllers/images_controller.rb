@@ -1,5 +1,4 @@
 class ImagesController < ApplicationController
-
   # 動的OGPの実装予定
   def ogp
     text = ogp_params[:text]

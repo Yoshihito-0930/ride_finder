@@ -6,6 +6,6 @@ class CreateFavoriteDestinations < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :favorite_destinations, [:user_id, :destination_id], unique: true
+    add_index :favorite_destinations, %i[user_id destination_id], unique: true
   end
 end
