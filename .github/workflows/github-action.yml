@@ -35,9 +35,13 @@ jobs:
         run: |
           cp config/database.yml.ci config/database.yml
 
+      - name: Debug environment variables
+        run: |
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}"
+
       - name: Wait for Postgres to be ready
         run: |
-          until pg_isready -h 127.0.0.1 -U postgres -d appdb; do
+          until pg_isready -h 127.0.0.1 -U postgres; do
             echo "Waiting for database to be ready..."
             sleep 2
           done
