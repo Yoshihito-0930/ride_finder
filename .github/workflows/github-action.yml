@@ -4,57 +4,77 @@ on:
   push:
 
 jobs:
-  rspec:
+  test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
     services:
-      postgres:
-        image: postgres:16
+      db:
+        image: postgres:13
+        env:
+          POSTGRES_DB: appdb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: appdb
-          DB_HOST: db
-          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        volumes:
+          - postgresql_data:/var/lib/postgresql/data
 
-    steps:
+    steps: # GitHubのリポジトリからコードを取得する。CI環境の初期値はコードが空の状態。
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Ruby
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 131.0.6778.85
+          install-chromedriver: true
+
+      - name: Set up Ruby # Rubyのセットアップ
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.3
           bundler-cache: true
 
+      - name: Cache node modules # Nodeモジュールをキャッシュ
+        uses: actions/cache@v4
+        with:
+          path: node_modules # キャッシュするディレクトリを指定
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }} # キャッシュのキーを指定
+          restore-keys: |
+            ${{ runner.os }}-node-  # 部分一致する最新のキャッシュを探します。
+
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install
+          bundle install --jobs 4 --retry 3
+          yarn install --frozen-lockfile
 
-      - name: Set up database configuration
+      - name: assets precompile 
+        run: bundle exec rake assets:precompile RAILS_ENV=test
+
+      - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: |
           cp config/database.yml.ci config/database.yml
+          bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
 
-      - name: Debug environment variables
-        run: |
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}"
-
-      - name: Wait for Postgres to be ready
-        run: |
-          until pg_isready -h 127.0.0.1 -U postgres; do
-            echo "Waiting for database to be ready..."
-            sleep 2
-          done
-
-      - name: Setup Database
-        run: |
-          bundle exec rails db:create RAILS_ENV=test
-          bundle exec rails db:migrate RAILS_ENV=test
-
-      - name: Run rspec
+      - name: Run rspec # RSpecを実行
         run: bundle exec rspec
+
+      - name: Archive rspec result screenshots # RSpecに失敗した時のスクリーンショットを追加
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec result screenshots
+          path: tmp/capybara/
 
   rubocop:
     runs-on: ubuntu-latest
@@ -75,3 +95,5 @@ jobs:
 
       - name: Run rubocop
         run: bundle exec rubocop
+
+
