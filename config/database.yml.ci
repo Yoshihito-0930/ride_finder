@@ -4,6 +4,6 @@ test:
   database: appdb
   pool: 5
   username: postgres
-  password: <%= ENV['POSTGRES_PASSWORD'] %>
-  host: 127.0.0.1
+  password: password
+  host: db
   port: 5432
