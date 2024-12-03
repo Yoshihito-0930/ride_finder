@@ -59,9 +59,7 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
-        run: |
-          cp config/database.yml.ci config/database.yml
-          bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
+        run: bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
 
       - name: Run rspec # RSpecを実行
         run: bundle exec rspec
