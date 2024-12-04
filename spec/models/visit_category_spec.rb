@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe VisitCategory, type: :model do
   describe 'バリデーションチェック' do
-    it '設定したenumが機能しているか' do
+    it '設定したenumがあるか' do
       visit_category_keys = VisitCategory.names.keys
       visit_category_values = VisitCategory.names.values
       expect(visit_category_keys).to match_array(%w[scenic_spot tourist_attraction roadside_station campground
