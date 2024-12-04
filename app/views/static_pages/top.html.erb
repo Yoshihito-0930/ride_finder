@@ -20,8 +20,12 @@
           class="rounded-xl" />
         </figure>  -->
         <div class="card-body items">
-          <h2 class="card-title pb-4">ログインして便利な機能を使ってみよう</h2>
-          <p>ログインすると見つけたツーリングスポットにいつでも行けるように保存することが出来ます。ログインはLINE・Googleアカウントを使って簡単にログインすることが出来ます。</p>
+          <h2 class="card-title pb-4">ログインして便利に使おう！</h2>
+          <p>ログインすると見つけたツーリングスポットにいつでも行けるように保存することが出来ます。 ログインはLINE・Googleアカウントを使って簡単にログインすることが出来ます。</p>
+          <div class= "flex justify-center mt-4">
+            <%= image_tag "google_logo_icon.svg", size:'32x32', class: 'px-4' %>
+            <%= image_tag "line_logo_icon.svg", size:'40x40', class: 'px-4' %>
+          </div>
           <div class="card-actions justify-center">
             <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn mt-4" %>
           </div>
@@ -36,10 +40,10 @@
         class="rounded-xl" />
       </figure>  -->
       <div class="card-body items">
-        <h2 class="card-title pb-4">お気に入りに追加</h2>
-        <p>お気に入りに追加すると画面右上のメニューの「お気に入り」からいつでもツーリングスポットへアクセス出来ます。</p>
+        <h2 class="card-title pb-4">ツーリングスポット保存しよう！</h2>
+          <p>見つけたツーリングスポットを「後で行きたい」「お気に入り」に追加できます。追加すると画面右上のメニューからいつでもツーリングスポットへアクセス出来ます。</p>
         <div class="card-actions justify-center">
-          <%= button_to "ログインする", login_path, method: :get, class: "btn rounded-btn mt-4" %>
+        <img src="https://i.gyazo.com/77a4ea283f1e3543a25b2bc2c6488fcf.gif" alt="説明GIF" width="422"/>
         </div>
       </div>
     </div>
