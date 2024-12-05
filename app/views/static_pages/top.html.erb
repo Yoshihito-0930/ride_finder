@@ -1,14 +1,30 @@
 <div class="menu items-center z-10 bg-base-200 min-h-screen">
   <div class="flex-col md:flex-row justify-center gap-8">
-    <div class="card w-96 bg-base-100 shadow-xl py-4 my-4">
+    <div class="card card-compact w-96 bg-base-100 shadow-xl py-4 my-4">
       <div class="card-body">
-        <h2 class="card-title pb-4">ツーリングスポットを探そう！</h2>
+        <h2 class="card-title pb-4 justify-center">ツーリングスポットを探そう！</h2>
           <div>
-            <p>画面上部のツーリングスポットを探すから、現在地から探したいカテゴリーと検索範囲を指定してツーリングスポットを見つけよう。</p>
+            <p>画面上部のツーリングスポットを探すから、現在地から探したいカテゴリーと検索範囲を指定してツーリングスポットを見つけよう！</p>
           </div>
       </div>
       <figure class="px-8">
         <%= image_tag 'search_tutorial.png', class: "rounded-xl" %>
+      </figure>
+    </div>
+    <div class="card w-96 bg-base-100 shadow-xl py-4 my-4">
+      <div class="card-body">
+        <h2 class="card-title justify-center pb-4">位置情報の共有の許可</h2>
+        <div>
+          <p>Ride finderはお使いの端末の位置情報を使ってツーリングスポットを探すサービスのため、位置情報の共有の許可が必要になります。下記の通知が有った際は「許可」をご選択して下さい。</p>
+        </div>
+      </div>
+      <p class= "text-center">スマートフォンでご利用の方</p>
+      <figure class="px-4">
+        <%= image_tag 'current_location_mobile.png', class: "rounded-xl", size: '250x100' %>
+        </figure>
+        <p class= "text-center mt-4">パソコンでご利用の方</p>
+        <figure class="px-8">
+        <%= image_tag 'current_location_pc.png', class: "rounded-xl", size: '250x100' %>
       </figure>
     </div>
     <% if !logged_in? %>
@@ -40,8 +56,9 @@
         class="rounded-xl" />
       </figure>  -->
       <div class="card-body items">
-        <h2 class="card-title pb-4">ツーリングスポット保存しよう！</h2>
+        <h2 class="card-title justify-center pb-4">ツーリングスポットを保存しよう！</h2>
           <p>見つけたツーリングスポットを「後で行きたい」「お気に入り」に追加できます。追加すると画面右上のメニューからいつでもツーリングスポットへアクセス出来ます。</p>
+          <p>※ログイン後にご利用可能になります</p>
         <div class="card-actions justify-center">
         <img src="https://i.gyazo.com/77a4ea283f1e3543a25b2bc2c6488fcf.gif" alt="説明GIF" width="422"/>
         </div>
