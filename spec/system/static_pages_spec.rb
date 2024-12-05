@@ -23,7 +23,6 @@ RSpec.describe 'ヘッダー・フッター画面遷移', type: :system do
     expect(page).to have_content 'ツーリングスポットを探そう！'
   end
 
-
   it 'フッターのプライバシーポリシー押下時に利用規約ページへ遷移し、トップページリンクが正しく設定されている' do
     visit root_path
     click_on 'プライバシーポリシー'
@@ -53,7 +52,6 @@ RSpec.describe 'ヘッダー・フッター画面遷移', type: :system do
     expect(page).to have_content 'お問い合わせフォーム'
   end
 
-
   it 'プライバシーポリシーページからお問い合わせページへ遷移' do
     visit privacy_policy_path
     click_link 'link-contact-page'
@@ -77,10 +75,8 @@ RSpec.describe 'エラーハンドリング', type: :system do
     expect(current_path).to eq '/404'
     expect(page.status_code).to eq 404
     expect(page).to have_content 'リクエストに誤り'
-    
+
     click_button 'トップページに戻る'
     expect(current_path).to eq root_path
-  end 
-
-
+  end
 end

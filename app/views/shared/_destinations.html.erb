@@ -11,7 +11,7 @@
         <% end %>
       </figure>
       <div class="card-body">
-        <%= link_to destination_path(destination) do %>
+        <%= link_to destination_path(destination), data: { turbo: false } do %>
           <h2 class="card-title"><%= destination.name %></h2>
         <% end %>
         <p><%= destination.address %></p>
