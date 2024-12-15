@@ -2,6 +2,7 @@ class Destination < ApplicationRecord
   has_many :users, through: :favorite_destinations
   has_many :favorite_destinations, dependent: :destroy
   has_many :future_visits, dependent: :destroy
+  has_one_attached :image
 
   validates :name, presence: true
   validates :latitude, presence: true
@@ -19,15 +20,41 @@ class Destination < ApplicationRecord
       destination.latitude = place_data['geometry']['location']['lat']
       destination.longitude = place_data['geometry']['location']['lng']
       destination.rating = place_data['rating']
-      destination.image = place_data['photo_url'] if place_data['photo_url'].present?
       destination.google_maps_place_id = place_data['place_id']
       destination.website = place_data['website'] if place_data['website'].present?
+      destination.user_ratings_total = place_data['user_ratings_total']
 
+      if place_data['photo_url'].present?
+        begin
+        image_url = place_data['photo_url']
+        if URI.parse(image_url).scheme == 'https'
+          # URLから画像データを取得
+          image_data = URI.open(image_url)
+          content_type = image_data.content_type
+          file_extension = content_type.split('/').last
+      
+          # Active Storageに保存
+          destination.image.attach(
+            io: image_data,
+            filename: "destination_image_#{SecureRandom.hex}.#{file_extension}",
+            content_type: content_type
+          )
+        end
+        rescue => e
+          Rails.logger.error("Image upload failed: #{e.message}")
+        end
+      end
       if place_data['opening_hours'] && place_data['opening_hours']['weekday_text']
         destination.business_hours = place_data['opening_hours']['weekday_text'].join("\n")
       end
+      
+      if destination.invalid?
+        Rails.logger.error("Destination creation failed: #{destination.errors.full_messages}")
+      end
+      destination.save
 
-      destination.user_ratings_total = place_data['user_ratings_total']
+      binding.pry
+      destination
     end
   end
 end
