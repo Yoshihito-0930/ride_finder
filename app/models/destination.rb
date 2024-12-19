@@ -52,8 +52,6 @@ class Destination < ApplicationRecord
         Rails.logger.error("Destination creation failed: #{destination.errors.full_messages}")
       end
       destination.save
-
-      binding.pry
       destination
     end
   end
