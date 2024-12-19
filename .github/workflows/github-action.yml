@@ -38,7 +38,7 @@ jobs:
           chrome-version: 131.0.6778.85
           install-chromedriver: true
 
-      - name: Set up Ruby # Rubyのセットアップ
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.3
@@ -57,6 +57,12 @@ jobs:
           gem install bundler
           bundle install --jobs 4 --retry 3
           yarn install --frozen-lockfile
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+          chmod +x wait-for-it.sh
+          ./wait-for-it.sh -t 60 db:5432
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: bundle exec rails db:drop db:create db:migrate RAILS_ENV=test

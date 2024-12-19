@@ -9,15 +9,22 @@ class DestinationsController < ApplicationController
 
     @destination = Destination.find_or_create_from_place_data(place_data)
     if @destination.present?
+=begin
       # if @destination.image.blank? && place_data['photo_url'].present?
       #   image_url = place_data['photo_url']
 
       #   if URI.parse(image_url).scheme == 'https'
       #     # URLから画像データを取得
       #     image_data = URI.open(image_url)
-      #     @destination.image.attach(io: downloaded_image, filename: "destination_image_#{SecureRandom.hex}.jpg", content_type: 'image/jpeg')
+      #     @destination.image.attach(
+              io: downloaded_image,
+              filename: "destination_image_#{SecureRandom.hex}.jpg",
+              content_type: 'image/jpeg'
+            )
+
       #   end
       # end
+=end
       redirect_to destination_path(@destination)
     else
       flash.now[:alert] = '目的地の取得に失敗しました。ページをリロードしてから再度お試し下さい。'

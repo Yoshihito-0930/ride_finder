@@ -26,31 +26,29 @@ class Destination < ApplicationRecord
 
       if place_data['photo_url'].present?
         begin
-        image_url = place_data['photo_url']
-        if URI.parse(image_url).scheme == 'https'
-          # URLから画像データを取得
-          image_data = URI.open(image_url)
-          content_type = image_data.content_type
-          file_extension = content_type.split('/').last
-      
-          # Active Storageに保存
-          destination.image.attach(
-            io: image_data,
-            filename: "destination_image_#{SecureRandom.hex}.#{file_extension}",
-            content_type: content_type
-          )
-        end
-        rescue => e
+          image_url = place_data['photo_url']
+          if URI.parse(image_url).scheme == 'https'
+            # URLから画像データを取得
+            image_data = URI.open(image_url)
+            content_type = image_data.content_type
+            file_extension = content_type.split('/').last
+
+            # Active Storageに保存
+            destination.image.attach(
+              io: image_data,
+              filename: "destination_image_#{SecureRandom.hex}.#{file_extension}",
+              content_type: content_type
+            )
+          end
+        rescue StandardError => e
           Rails.logger.error("Image upload failed: #{e.message}")
         end
       end
       if place_data['opening_hours'] && place_data['opening_hours']['weekday_text']
         destination.business_hours = place_data['opening_hours']['weekday_text'].join("\n")
       end
-      
-      if destination.invalid?
-        Rails.logger.error("Destination creation failed: #{destination.errors.full_messages}")
-      end
+
+      Rails.logger.error("Destination creation failed: #{destination.errors.full_messages}") if destination.invalid?
       destination.save
       destination
     end
