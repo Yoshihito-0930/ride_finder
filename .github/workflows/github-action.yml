@@ -21,7 +21,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres -d appdb"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -31,6 +31,14 @@ jobs:
     steps: # GitHubのリポジトリからコードを取得する。CI環境の初期値はコードが空の状態。
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Check PostgreSQL logs
+        run: docker logs $(docker ps -q --filter "ancestor=postgres:13")
+
+      - name: Check running containers
+        run: docker ps -a
+
+
 
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v1
@@ -63,6 +71,12 @@ jobs:
           wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
           chmod +x wait-for-it.sh
           ./wait-for-it.sh -t 60 db:5432 || exit 1
+
+      - name: Test database connection
+        run: |
+          apt-get update && apt-get install -y postgresql-client
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h db -U postgres -d appdb -c '\l'
+
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
