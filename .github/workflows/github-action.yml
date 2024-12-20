@@ -62,7 +62,7 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
           chmod +x wait-for-it.sh
-          ./wait-for-it.sh -t 60 db:5432
+          ./wait-for-it.sh -t 60 db:5432 || exit 1
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
