@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:16
         env:
           POSTGRES_DB: appdb
           POSTGRES_USER: postgres
@@ -63,6 +63,7 @@ jobs:
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: |
+          cp config/database.yml
           bundler exec rails db:create RAILS_ENV=test
           bundler exec rails db:migrate RAILS_ENV=test
 
