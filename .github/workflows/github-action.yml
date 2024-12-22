@@ -18,6 +18,7 @@ jobs:
           POSTGRES_DB: appdb
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          GOOGLE_MAPS_API_KEY: test_key
         ports:
           - 5432:5432
         options: >-
