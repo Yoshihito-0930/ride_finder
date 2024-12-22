@@ -6,6 +6,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y build-essential
 
     defaults:
       run:
@@ -67,7 +70,10 @@ jobs:
           bundler exec rails db:create RAILS_ENV=test
           bundler exec rails db:migrate RAILS_ENV=test
 
-      - name: Run rspec # RSpecを実行
+      - name: Precompile assets
+        run: bin/rails assets:precompile
+
+      - name: Run rspec
         run: bundle exec rspec
 
       - name: Archive rspec result screenshots # RSpecに失敗した時のスクリーンショットを追加
