@@ -63,7 +63,6 @@ jobs:
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
         run: |
-          cp config/database.yml
           bundler exec rails db:create RAILS_ENV=test
           bundler exec rails db:migrate RAILS_ENV=test
 
