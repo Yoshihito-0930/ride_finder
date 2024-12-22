@@ -63,7 +63,7 @@ test:
   database: appdb
   host: db
   username: postgres
-  password: password
+  password: <%= ENV['POSTGRES_PASSWORD'] || 'localhost' %>
   port: 5432
 
 # As with config/credentials.yml, you never want to store sensitive information,
