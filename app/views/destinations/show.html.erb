@@ -1,4 +1,3 @@
-
 <section class="body-font">
   <div class="container py-8 mx-auto">
     <div class="flex flex-wrap w-full mb-10 md:ml-10">
@@ -123,10 +122,8 @@
           );
           setDestinationMarker(setLocation, map)
           streetViewService(setLocation)
-          mapInitialized = true;
         }
       );
-      mapInitialized = true;
     } else { // Geolocation APIをサポートしていないブラウザの処理
       console.log("ブラウザがGeolocation APIに対応しておりませんを追加")
         map = new google.maps.Map(
@@ -142,8 +139,8 @@
         );
       setDestinationMarker(setLocation, map)
       streetViewService(setLocation)
-      mapInitialized = true;
     }
+    mapInitialized = true;
   }
 
   // ルートを取得して地図に描画
@@ -303,38 +300,21 @@
     return Promise.all(promises);
   }
 
+  document.addEventListener("turbo:load", () => {
+  // 初期ルートを表示
+  displayRoutes(setLocation);
+  toggleRoute("avoidHighways");
 
-  
-  // ページ読み込み時の処理 (DOMContentLoadedリファクタリング要)
-  document.addEventListener("DOMContentLoaded", () => {
-    // 初期ルートを表示
-    displayRoutes(setLocation);
-    toggleRoute("avoidHighways")
-
-    // 「行ってみる」ボタンのイベントリスナー
-    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const location = { destinationLat, destinationLng };
-      });
-    });
-
-    // 切り替えボタンのイベントリスナーを設定(調整中)
-    document.getElementById("toggle-avoidHighways").addEventListener("click", () => toggleRoute("avoidHighways"));
-    // document.getElementById("toggle-avoidTolls").addEventListener("click", () => toggleRoute("avoidTolls"));
-    // document.getElementById("toggle-noAvoid").addEventListener("click", () => toggleRoute("noAvoid"));
-  });
-
- 
-  document.addEventListener("DOMContentLoaded", () => {
-  const routeModal = document.getElementById("route-modal");
-  const routeContent = document.getElementById("route-content");
+  // 「行ってみる」ボタンのイベントリスナー
   const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-
   buttons.forEach((button) => {
     button.addEventListener("click", async () => {
       try {
         const routeInfos = await getRoutes(setLocation);
+
+        // モーダル要素の取得
+        const routeModal = document.getElementById("route-modal");
+        const routeContent = document.getElementById("route-content");
 
         // ルート情報をモーダルに挿入
         routeContent.innerHTML = `
@@ -362,7 +342,14 @@
       }
     });
   });
+
+  // 切り替えボタンのイベントリスナー
+  const toggleHighwaysButton = document.getElementById("toggle-avoidHighways");
+  if (toggleHighwaysButton) {
+    toggleHighwaysButton.addEventListener("click", () => toggleRoute("avoidHighways"));
+  }
 });
 
+
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=geometry&callback=initMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=geometry&callback=initMap" data-turbo-track="reload"></script>

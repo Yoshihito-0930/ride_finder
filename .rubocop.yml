@@ -3,3 +3,9 @@ inherit_from: .rubocop_todo.yml
 Metrics/BlockLength:
   Exclude:
     - 'db/schema.rb'
+
+Metrics/AbcSize:
+  Max: 60
+
+Metrics/MethodLength:
+  Max: 40

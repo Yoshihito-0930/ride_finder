@@ -12,12 +12,13 @@ jobs:
         working-directory: .
 
     services:
-      db:
-        image: postgres:13
+      postgres:
+        image: postgres:16
         env:
           POSTGRES_DB: appdb
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          GOOGLE_MAPS_API_KEY: test_key
         ports:
           - 5432:5432
         options: >-
@@ -38,7 +39,7 @@ jobs:
           chrome-version: 131.0.6778.85
           install-chromedriver: true
 
-      - name: Set up Ruby # Rubyのセットアップ
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.3
@@ -53,15 +54,23 @@ jobs:
             ${{ runner.os }}-node-  # 部分一致する最新のキャッシュを探します。
 
       - name: Install dependencies
+        run: sudo apt-get install -y build-essential
+
+      - name: Install dependencies
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
           yarn install --frozen-lockfile
 
       - name: Database create and migrate # データベースの作成とマイグレーションを実行
-        run: bundle exec rails db:drop db:create db:migrate RAILS_ENV=test
+        run: |
+          bundler exec rails db:create RAILS_ENV=test
+          bundler exec rails db:migrate RAILS_ENV=test
 
-      - name: Run rspec # RSpecを実行
+      - name: Precompile assets
+        run: bin/rails assets:precompile
+
+      - name: Run rspec
         run: bundle exec rspec
 
       - name: Archive rspec result screenshots # RSpecに失敗した時のスクリーンショットを追加

@@ -16,7 +16,7 @@ module.exports = {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       backgroundColor: {
-        'custom-hover': '#f0f0f0', // ホバー時のカスタム背景色
+        'custom-hover': '#f0f0f0', // ホバー時の背景色
       },
     },
   },
