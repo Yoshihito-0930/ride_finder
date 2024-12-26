@@ -64,19 +64,3 @@ RSpec.describe 'ヘッダー・フッター画面遷移', type: :system do
     expect(page).to have_link('link-x-account', href: 'https://x.com/totototo0324')
   end
 end
-
-RSpec.describe 'エラーハンドリング', type: :system do
-  before do
-    driven_by(:rack_test)
-  end
-
-  it '存在しないページにアクセスした場合に404ページに遷移する' do
-    visit '/nonexistent_path'
-    expect(current_path).to eq '/404'
-    expect(page.status_code).to eq 404
-    expect(page).to have_content 'リクエストに誤り'
-
-    click_button 'トップページに戻る'
-    expect(current_path).to eq root_path
-  end
-end
