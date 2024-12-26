@@ -33,6 +33,8 @@ gem 'whenever'
 
 gem 'httparty'
 
+gem 'aws-sdk-s3', require: false
+
 gem 'meta-tags', require: 'meta_tags'
 gem 'mini_magick'
 

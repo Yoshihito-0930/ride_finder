@@ -59,8 +59,8 @@
   - ストリートビューの表示(Google Maps JavaScript API)
   - ルート情報取得機能(有料道路・有料区間回避ルート・下道の所要時間と距離の取得)
   - 独自ドメイン取得
- 
-  - 
+  - テスト機能(RubocopによるLintチェック,RSpecによるモデルチェック)
+  
 # ■ 機能の実装方針予定
 - 実装予定機能
   - 通知機能(サービスを継続的に使ってもらえるようにメールまたはLINE Messaging APIで保存したロケーションを通知)
@@ -68,4 +68,4 @@
 
 
 # ■ ER図
-[![Image from Gyazo](https://i.gyazo.com/1749643e17bb6ccb9574ac01e283c194.png)](https://gyazo.com/1749643e17bb6ccb9574ac01e283c194)
+[![Image from Gyazo](https://i.gyazo.com/6737c86e223b4c252f61210ee25dcce0.png)](https://gyazo.com/6737c86e223b4c252f61210ee25dcce0)

@@ -1,7 +1,8 @@
 class SearchsController < ApplicationController
   def result
-    @category = params[:category]
-    @condition = params[:condition]
+    permitted_params = search_params
+    @category = permitted_params[:category]
+    @condition = permitted_params[:condition]
     @condition_value = if params[:condition] == 'distance'
                          params[:distance_value]
                        else
@@ -9,7 +10,9 @@ class SearchsController < ApplicationController
                        end
   end
 
-  def set_q
-    # @q = T.ransack(params[:q])
+  private
+
+  def search_params
+    params.except(:commit).permit(:category, :condition, :distance_value, :time_value)
   end
 end
