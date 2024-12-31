@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   get 'images/ogp.png', to: 'images#ogp', as: 'images_ogp'
 
+  post 'safety_tips/daily', to: 'safety_tips#create_daily_tip'
+
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
   resources :destinations, only: %i[create show] do

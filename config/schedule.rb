@@ -19,6 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.day, at: '3:00 am' do
-  runner 'SafetyTip.generate_daily_safety_tip'
+every 1.day, at: '12:00 am' do
+  runner "SafetyTipsController.new.create_daily_tip"
 end

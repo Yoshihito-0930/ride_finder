@@ -1,4 +1,17 @@
 <div class="menu items-center z-10 bg-gray-50 min-h-screen">
+<div tabindex="0" class="collapse collapse-arrow bg-green-100">
+<summary class="collapse-title text-l font-medium">
+  今日の交通安全情報AI
+</summary>
+<div class="collapse-content">
+  <% if @safety_info.present? %>
+    <p><%= @safety_info %> </p>
+    <%else%>
+    <p>今日の交通安全情報はありません。</p>
+  <% end %>
+</div>
+</div>
+
   <div class="flex-col md:flex-row justify-center gap-8">
     <div class="card card-compact w-96 bg-base-100 shadow-xl py-4 my-4">
       <div class="card-body">
