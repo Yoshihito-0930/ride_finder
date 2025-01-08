@@ -8,4 +8,4 @@
 
 # db/seeds.rb
 
-SafetyTip.find_or_create_by(content: "交通安全情報。無理をせず余裕を持って安全運転を心がけましょう！")
+SafetyTip.find_or_create_by(content: '交通安全情報。無理をせず余裕を持って安全運転を心がけましょう！')

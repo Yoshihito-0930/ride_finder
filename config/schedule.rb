@@ -19,6 +19,14 @@
 
 # Learn more: http://github.com/javan/whenever
 
+# set :environment, "development"
+
+require File.expand_path("#{File.dirname(__FILE__)}/environment")
+rails_env = ENV['RAILS_ENV'] || :development
+set :environment, rails_env
+ENV.each { |k, v| env(k, v) }
+set :output, "#{Rails.root}/log/cron.log"
+
 every 1.day, at: '12:00 am' do
-  runner 'SafetyTipsController.new.create_daily_tip'
+  rake 'safety_tips:create_daily_tip'
 end
