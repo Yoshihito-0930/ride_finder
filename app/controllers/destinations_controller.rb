@@ -1,11 +1,12 @@
 class DestinationsController < ApplicationController
   before_action :require_login, only: %i[favorites]
   require 'open-uri'
-  require 'base64'
   helper_method :prepare_meta_tags
 
   def create
     place_data = JSON.parse(params[:place_data])
+
+    binding.pry
 
     @destination = Destination.find_or_create_destination(place_data)
     if @destination.present?
@@ -18,6 +19,7 @@ class DestinationsController < ApplicationController
 
   def show
     @destination = Destination.find(params[:id])
+    binding.pry
     prepare_meta_tags(@destination)
   end
 
