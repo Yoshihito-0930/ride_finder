@@ -31,7 +31,7 @@
           <% if @destination.image.attached? %>
             <li><%= image_tag @destination.image, alt: @destination.name, width: 500, height: 400, class: "custom-image" %></li>
           <% else %>
-            <li><%= image_tag no_image %></li>
+            <li><%= image_tag 'no_image.jpg' %></li>
           <% end %>
           <li><%= @destination.address %> </li>
           <% if @destination.rating %>
