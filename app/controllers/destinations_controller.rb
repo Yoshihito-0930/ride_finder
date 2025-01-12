@@ -5,9 +5,6 @@ class DestinationsController < ApplicationController
 
   def create
     place_data = JSON.parse(params[:place_data])
-
-    binding.pry
-
     @destination = Destination.find_or_create_destination(place_data)
     if @destination.present?
       redirect_to destination_path(@destination)
@@ -19,7 +16,6 @@ class DestinationsController < ApplicationController
 
   def show
     @destination = Destination.find(params[:id])
-    binding.pry
     prepare_meta_tags(@destination)
   end
 
