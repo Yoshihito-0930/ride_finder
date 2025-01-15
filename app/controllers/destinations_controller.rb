@@ -20,17 +20,17 @@ class DestinationsController < ApplicationController
   end
 
   def favorites
-    @favorite_destinations = current_user.favorites.includes(:favorite_destinations).order(created_at: :desc)
+    @favorite_destinations = current_user.favorites.includes(:favorite_destinations).with_attached_image.order(created_at: :desc)
   end
 
   def future_visits
-    @future_visit_destinations = current_user.upcoming_destinations.includes(:future_visits).order(created_at: :desc)
+    @future_visit_destinations = current_user.upcoming_destinations.includes(:future_visits).with_attached_image.order(created_at: :desc)
   end
 
   private
 
   def prepare_meta_tags(destination)
-    ## このimage_urlにMiniMagickで設定したOGPの生成した合成画像を代入する
+    ## image_urlにMiniMagickで設定したOGPの生成した合成画像を代入する
     image_url = "#{request.base_url}/images/ogp.png?text=#{CGI.escape(destination.name)}"
     set_meta_tags og: {
                     site_name: 'Ride finder',
