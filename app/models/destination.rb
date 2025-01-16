@@ -23,7 +23,7 @@ class Destination < ApplicationRecord
       destination.user_ratings_total = place_data['user_ratings_total']
       attach_image(destination, place_data['photo_url']) if place_data['photo_url'].present?
 
-      # 営業時間の処理
+      # 営業時間の処理 後ほど修正
       if place_data['opening_hours'] && place_data['opening_hours']['weekday_text']
         destination.business_hours = place_data['opening_hours']['weekday_text'].join("\n")
       end

@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
   def top
-    @safety_info = SafetyTip.order(created_at: :desc).first
+    @safety_info = SafetyTip.last[:content]
   end
 end

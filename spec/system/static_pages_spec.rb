@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe 'ヘッダー・フッター画面遷移', type: :system do
   before do
     driven_by(:rack_test)
+    SafetyTip.create(content: 'テスト用の交通安全情報')
   end
 
   it 'ヘッダーアイコン押下時にトップページに遷移する' do
