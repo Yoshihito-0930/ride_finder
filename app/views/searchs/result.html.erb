@@ -175,7 +175,6 @@ function getPlaceDetails(placeId, result) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       if (place.website){
         result.website = place.website;
-        console.log("Website:", place.website);
       }
     } else {
       console.error("Place Details request failed:", status);
@@ -234,7 +233,6 @@ function performNearbySearch(currentLocation) {
           result.formatted_address = place.formatted_address;
           if (place.website){
             result.website = place.website;
-            console.log("Website:", place.website);
           }
         } else {
           console.error("Place Details request failed:", status);
@@ -278,9 +276,6 @@ function performNearbySearch(currentLocation) {
             filteredResults = results;
           }
         }
-        filteredResults.forEach(result => {
-          console.log(result.name);
-        });
         addPlaces(filteredResults, map);
         if (moreButton) {
           moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -379,172 +374,6 @@ function getRoutes(location, callback) {
 
   return Promise.all(promises);
 }
-
-
-/* カードのほうに問題がなければ削除
-function addPlaces(places, map) {
-  const placesList = document.getElementById("places");
-
-  if (Array.isArray(places) && places.length !== 0) {
-    places.forEach(place => {
-      if (place.geometry && place.geometry.location) {
-        const location = place.geometry.location;
-
-        // ルート情報が取得された後に実行するコールバック関数
-
-        // 修正が必要　結果が返ってきていたらここでreturnしても検索結果になにも表示されない。 if文の前に調べて検索結果に該当項目がないことを追加が必要
-        getRoutes(location).then(routeInfos => {
-          const noAvoidRoute = routeInfos.find(route => route.type === 'noAvoid');
-          const drivingMinutes = noAvoidRoute.drivingMinutes;
-          const numberDistance = noAvoidRoute.numberDistance;
-
-          console.log(`timeLimitは${timeLimit}で${place.name}のdrivingMinutesは${drivingMinutes}`)
-
-          console.log(checkConditionDistance, `numberDistanceは${numberDistance}でradiusは${radius}`)
-          if (timeLimit && drivingMinutes > timeLimit) {
-            return;
-          }else if(checkConditionDistance && numberDistance > radius){
-            return;
-          }
-
-          const marker = new google.maps.Marker({
-            map,
-            title: place.name,
-            position: location,
-          });
-
-          const infoWindow = new google.maps.InfoWindow({
-            content: place.name
-          });
-  
-          marker.addListener('click', function() {
-            if (currentInfoWindow) {
-              currentInfoWindow.close();
-            }
-            infoWindow.open(map, marker);
-            currentInfoWindow = infoWindow;
-          });
-
-          const li = document.createElement("li");
-          li.textContent = place.name;
-
-          // 画像を表示
-          if (place.photos && place.photos.length > 0) {
-            const firstPhotoUrl = place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 });
-            const img = document.createElement("img");
-            img.src = firstPhotoUrl;
-            img.style.width = "400px";
-            img.style.height = "300px";
-            li.appendChild(img);
-          }
-
-          // 住所を表示
-          console.log(`place.formatted_addressは${place.formatted_address}`)
-          if (place.formatted_address) {
-            const address = document.createElement("p");
-            address.textContent = place.formatted_address.replace("日本、", "" );
-            li.appendChild(address);
-          }
-
-          // 評価を表示
-          if (place.rating) {
-            const rating = document.createElement("p");
-            rating.textContent = `評価☆ ${place.rating}(レビュー件数:${place.user_ratings_total}件)`;
-            li.appendChild(rating);
-          }
-
-          // 営業時間を表示(調整中)
-          if (place.opening_hours.weekday_text) {
-            const weekdayBusinessHours = document.createElement("p");
-            hours.textContent = `営業時間: ${place.opening_hours.weekday_text.join(", ")}`;
-            li.appendChild(businessHours);
-          }
-
-          // 目的地までの所要時間の表示
-          routeInfos.forEach(info => {
-            const routeLink = document.createElement("a");
-            let avoidParams = '';
-            if (info.type === 'avoidHighways') {
-              avoidParams = 'tolls,highways';
-            } else if (info.type === 'avoidTolls') {
-              avoidParams = 'tolls';
-            }
-            routeLink.textContent = `${info.type === 'noAvoid' ? '有料道路を使用' : info.type === 'avoidTolls' ? '有料道路を回避' : '下道のみ'} (予想所要時間: ${info.drivingTime}, 距離: 約${info.textDistance})`;
-            li.appendChild(routeLink);
-          });
-
-          // 詳細ページへのリンク作成
-          const button = document.createElement("button");
-          button.textContent = "詳細を見る";
-          button.dataset.placeId = place.place_id;
-          button.addEventListener("click", () => {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/destinations';
-            
-            // place_dataを hiddenフィールドとして追加
-            const placeDataInput = document.createElement('input');
-            placeDataInput.type = 'hidden';
-            placeDataInput.name = 'place_data';
-            // 画像情報を含めた place_data を作成
-            const placeDataWithImage = {
-              ...place, // placeオブジェクト全体をplaceDataWithImageコピー
-              photo_url: place.photos && place.photos.length > 0 ? place.photos[0].getUrl({ maxWidth: 2000, maxHeight: 1600 }) : null // 画像URLを追加
-            };
-
-            placeDataInput.value = JSON.stringify(placeDataWithImage); 
-            form.appendChild(placeDataInput);
-            
-            // CSRFトークンを追加
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const csrfTokenInput = document.createElement('input');
-            csrfTokenInput.type = 'hidden';
-            csrfTokenInput.name = 'authenticity_token';
-            csrfTokenInput.value = csrfToken;
-            form.appendChild(csrfTokenInput);
-            
-            // フォームをbodyに追加して送信
-            document.body.appendChild(form);
-            form.submit();
-          });
-        
-          li.appendChild(button);
-
-          placesList.appendChild(li);
-
-          li.addEventListener("click", function() {
-            map.setCenter(location);
-          });
-        }).catch(error => console.error(error));
-        }
-      });
-  }else{
-    console.log("addPlaces elseになっている")
-    const li = document.createElement("li");
-    const no_results = document.createElement("p");
-    const chromeLocationInformationSettingLink = document.createElement("a");
-    const safariLocationInformationSettingLink = document.createElement("a");
-    if(places){
-      console.log("placesはtrue")
-      no_results.textContent = "検索条件に該当する候補地がありません";
-      placesList.appendChild(no_results);
-    }else{
-      console.log("placesはfalse")
-      no_results.textContent = "現在地が取得できませんでした。お使いのブラウザの位置情報の取得を許可して下さい";
-      chromeLocationInformationSettingLink.href = "https://support.google.com/chrome/answer/142065?hl=ja&co=GENIE.Platform%3DiOS&oco=1"
-      chromeLocationInformationSettingLink.target = "_blank";
-      chromeLocationInformationSettingLink.textContent = "Google Chromeを使われている方"
-      safariLocationInformationSettingLink.href = "https://ssl.help.tsite.jp/faq/show/59512?site_domain=qa-tsite"
-      safariLocationInformationSettingLink.target = "_blank";
-      safariLocationInformationSettingLink.textContent = "safariを使われている方"
-      placesList.appendChild(no_results);
-      li.appendChild(chromeLocationInformationSettingLink);
-      li.appendChild(safariLocationInformationSettingLink);
-      placesList.appendChild(li);
-    }
-  }
-}
-*/
 
 // ページ上に候補地を表示
 function addPlaces(places, map) {

@@ -29,7 +29,7 @@ jobs:
         volumes:
           - postgresql_data:/var/lib/postgresql/data
 
-    steps: # GitHubのリポジトリからコードを取得する。CI環境の初期値はコードが空の状態。
+    steps: # GitHubのリポジトリからコードを取得する。
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -51,7 +51,7 @@ jobs:
           path: node_modules # キャッシュするディレクトリを指定
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }} # キャッシュのキーを指定
           restore-keys: |
-            ${{ runner.os }}-node-  # 部分一致する最新のキャッシュを探します。
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: sudo apt-get install -y build-essential

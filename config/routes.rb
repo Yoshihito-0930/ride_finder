@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   get 'images/ogp.png', to: 'images#ogp', as: 'images_ogp'
 
+  post 'safety_tips/daily', to: 'safety_tips#create_daily_tip'
+
   resource :users, only: %i[show edit update]
   resources :safety_tips, only: %i[index]
   resources :destinations, only: %i[create show] do
@@ -25,7 +27,5 @@ Rails.application.routes.draw do
   resources :favorite_destinations, only: %i[create destroy]
   resources :future_visits, only: %i[create destroy]
 
-  get '/404', to: 'errors#not_found', as: :not_found
-  get '/500', to: 'errors#internal_server_error', as: :internal_server_error
-  match '*path', to: 'errors#not_found', via: :all
+  # get '*path', to: 'errors#not_found', as: :not_found
 end

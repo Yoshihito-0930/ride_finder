@@ -28,8 +28,10 @@
               <% end %>
             </div>
           </div>
-          <% if @destination.image.present? %>
-            <li><%= image_tag "data:image/jpeg;base64,#{@destination.image}", width: 500, height: 400, class: "custom-image" %></li>
+          <% if @destination.image.attached? %>
+            <li><%= image_tag @destination.image, alt: @destination.name, width: 500, height: 400, class: "custom-image" %></li>
+          <% else %>
+            <li><%= image_tag 'no_image.jpg' %></li>
           <% end %>
           <li><%= @destination.address %> </li>
           <% if @destination.rating %>
