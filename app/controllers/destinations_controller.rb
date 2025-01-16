@@ -20,11 +20,17 @@ class DestinationsController < ApplicationController
   end
 
   def favorites
-    @favorite_destinations = current_user.favorites.includes(:favorite_destinations).with_attached_image.order(created_at: :desc)
+    @favorite_destinations = current_user.favorites
+                                         .includes(:favorite_destinations)
+                                         .with_attached_image
+                                         .order(created_at: :desc)
   end
 
   def future_visits
-    @future_visit_destinations = current_user.upcoming_destinations.includes(:future_visits).with_attached_image.order(created_at: :desc)
+    @future_visit_destinations = current_user.upcoming_destinations
+                                             .includes(:future_visits)
+                                             .with_attached_image
+                                             .order(created_at: :desc)
   end
 
   private

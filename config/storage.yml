@@ -14,8 +14,6 @@ amazon:
   region: ap-northeast-1
   bucket: ride-finder-storage
   public: true
-  upload:
-    acl: nil
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:

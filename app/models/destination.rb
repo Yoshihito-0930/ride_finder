@@ -42,7 +42,6 @@ class Destination < ApplicationRecord
     end
   rescue StandardError => e
     Rails.logger.error("Image upload failed: #{e.message}")
-    binding.pry
   end
   # rubocop:enable Security/Open
 end
