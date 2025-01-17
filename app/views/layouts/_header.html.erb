@@ -10,7 +10,7 @@
       <div class="modal-box">
         <h3 class="font-bold text-lg pb-4 ">探したいツーリングスポットの条件を選択して下さい</h3>
         <div>
-          <%= form_with url: searchs_result_path, method: :get, local: true do |form| %>
+          <%= form_with url: searchs_result_path, method: :get, local: true, data: { turbo: false } do |form| %>
             <div class="pb-4">
             <p class="">行きたい場所のカテゴリーを選択して下さい</p>
               <%= form.label :category, "カテゴリー", class:"hidden" %>
@@ -46,8 +46,8 @@
           <details class="relative z-50 px-2">
             <summary>メニュー</summary>
             <ul class="bg-base-100 rounded-t-none p-2 z-50 relative">
-              <li><%= link_to "後で行きたい", future_visits_destinations_path, class: "btn btn-ghost" %></li>
-              <li><%= link_to "お気に入り", favorites_destinations_path, class: "btn btn-ghost" %></li>
+              <li><%= link_to "後で行きたい", future_visits_destinations_path, class: "btn btn-ghost", data: { turbo: false } %></li>
+              <li><%= link_to "お気に入り", favorites_destinations_path, class: "btn btn-ghost", data: { turbo: false } %></li>
               <li><%= link_to "マイページ", users_path, class: "btn btn-ghost" %></li>
               <li><%= link_to "ログアウト", logout_path, data: {method: :delete }, class: "btn btn-ghost" %></li>
             </ul>
