@@ -200,11 +200,6 @@ function performNearbySearch(currentLocation) {
   }
 
   let request
-  
-  console.log(condition)
-  console.log(timeLimit)
-  console.log(typeCategory)
-  console.log(textCategory)
 
   if (typeCategory) {
     request = {
@@ -221,9 +216,7 @@ function performNearbySearch(currentLocation) {
       return;
       }
       console.log("nearbySearch実行中")
-      results.forEach(result => {
-        console.log(result.name);
-      });
+      console.log("NearbySearch Request:", request);
 
       // nearbySearchだとformatted_addressが取得できないためgetDetailsで取得する
       let detailRequestsCompleted = 0; 
@@ -558,4 +551,4 @@ function addPlaces(places, map) {
 }
 
 </script>
-<script async src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=places,geometry&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&loading=async&libraries=places,geometry&callback=initMap" data-turbo-track="reload"></script>
