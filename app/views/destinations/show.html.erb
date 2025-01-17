@@ -3,7 +3,7 @@
     <div class="flex flex-wrap w-full mb-10 md:ml-10">
       <div class="lg:w-1/2 w-full mb-6 lg:mb-0">
         <div class="mt-5 mx-3 flex flex-row justify-start">
-          <%= link_to "戻る", 'javascript:history.back()' , class: "bg-card-body bg-base-300 border  rounded-full py-2 px-5 hover:bg hover:border-neutral hover:text-neutral focus:outline-none focus:ring-2 focus:ring-offset-2" %>
+          <%= link_to "戻る", 'javascript:history.back()', data: { turbo: false }, class: "bg-card-body bg-base-300 border  rounded-full py-2 px-5 hover:bg hover:border-neutral hover:text-neutral focus:outline-none focus:ring-2 focus:ring-offset-2" %>
         </div>
         <div class="h-1 w-20 rounded"></div>
         </div>
@@ -54,7 +54,14 @@
           <button class="btn my-4" data-lat="<%= @destination.latitude %>" data-lng="<%= @destination.longitude %>">
             行ってみる
           </button>
-          <%= render "shared/route_modal" %>
+          <dialog id="route-modal" class="modal">
+            <div class="modal-box">
+              <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+              </form>
+              <div id="route-content"></div>
+            </div>
+          </dialog>
         </ul>
       <% end %>
     </div>
@@ -69,8 +76,8 @@
 <script>
   let map;
   let mapInitialized = false;
-  const destinationLat = Number("<%= @destination.latitude %>")
-  const destinationLng = Number("<%= @destination.longitude %>")
+  const destinationLat = parseFloat("<%= @destination.latitude %>")
+  const destinationLng = parseFloat("<%= @destination.longitude %>")
   const setLocation = { lat: destinationLat, lng: destinationLng };
   let currentLocation
   
@@ -124,6 +131,7 @@
           );
           setDestinationMarker(setLocation, map)
           streetViewService(setLocation)
+          mapInitialized = true;
         }
       );
     } else { // Geolocation APIをサポートしていないブラウザの処理
@@ -141,8 +149,8 @@
         );
       setDestinationMarker(setLocation, map)
       streetViewService(setLocation)
+      mapInitialized = true;
     }
-    mapInitialized = true;
   }
 
   // ルートを取得して地図に描画
@@ -170,29 +178,29 @@
           directionsRenderers[key].setDirections(response);
 
           // マーカーを設定
-        const leg = response.routes[0].legs[0];
-        if (key === "avoidHighways") {
-          // 現在地のマーカー
-          new google.maps.Marker({
-            position: leg.start_location,
-            map: map,
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              fillColor: "#115EC3",
-              fillOpacity: 1,
-              strokeColor: "white",
-              strokeWeight: 2,
-              scale: 7,
-            },
-          });
+          const leg = response.routes[0].legs[0];
+          if (key === "avoidHighways") {
+            // 現在地のマーカー
+            new google.maps.Marker({
+              position: leg.start_location,
+              map: map,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: "#115EC3",
+                fillOpacity: 1,
+                strokeColor: "white",
+                strokeWeight: 2,
+                scale: 7,
+              },
+            });
 
-          // 目的地のマーカー
-          new google.maps.Marker({
-            position: leg.end_location,
-            map: map,
-            icon: null,
-          });
-        }
+            // 目的地のマーカー
+            new google.maps.Marker({
+              position: leg.end_location,
+              map: map,
+              icon: null,
+            });
+          }
         } else {
           console.error(`ルート取得失敗: ${key}, ステータス: ${status}`);
         }});
@@ -303,55 +311,57 @@
   }
 
   document.addEventListener("turbo:load", () => {
-  // 初期ルートを表示
-  displayRoutes(setLocation);
-  toggleRoute("avoidHighways");
+    if (!mapInitialized) {
+      initMap();
+    }
+    // 初期ルートを表示
+    displayRoutes(setLocation);
+    toggleRoute("avoidHighways");
 
-  // 「行ってみる」ボタンのイベントリスナー
-  const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-  buttons.forEach((button) => {
-    button.addEventListener("click", async () => {
-      try {
-        const routeInfos = await getRoutes(setLocation);
+    // 「行ってみる」ボタンのイベントリスナー
+    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        try {
+          const routeInfos = await getRoutes(setLocation);
 
-        // モーダル要素の取得
-        const routeModal = document.getElementById("route-modal");
-        const routeContent = document.getElementById("route-content");
+          // モーダル要素の取得
+          const routeModal = document.getElementById("route-modal");
+          const routeContent = document.getElementById("route-content");
 
-        // ルート情報をモーダルに挿入
-        routeContent.innerHTML = `
-          <h2 class="text-xl">ルート情報</h2>
-          <p>※実際の交通規制に従って走行してください</p>
-          <ul>
-            ${routeInfos.map(info => `
-              <li class="py-4 text-center">
-                <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
-                <p>所要時間: ${info.drivingTime}</p>
-                <p>距離: ${info.textDistance}</p>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
-                  このルートで行く
-                </a>
-              </li>
-            `).join("")}
-          </ul>
-        `;
+          // ルート情報をモーダルに挿入
+          routeContent.innerHTML = `
+            <h2 class="text-xl">ルート情報</h2>
+            <p>※実際の交通規制に従って走行してください</p>
+            <ul>
+              ${routeInfos.map(info => `
+                <li class="py-4 text-center">
+                  <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
+                  <p>所要時間: ${info.drivingTime}</p>
+                  <p>距離: ${info.textDistance}</p>
+                  <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
+                    このルートで行く
+                  </a>
+                </li>
+              `).join("")}
+            </ul>
+          `;
 
-        // モーダルを表示
-        routeModal.showModal();
-      } catch (error) {
-        console.error("ルート情報の取得に失敗しました:", error);
-        alert("ルート情報の取得に失敗しました。");
-      }
+          routeModal.showModal();
+        } catch (error) {
+          console.error("ルート情報の取得に失敗しました:", error);
+          alert("ルート情報の取得に失敗しました。");
+        }
+      });
     });
-  });
 
-  // 切り替えボタンのイベントリスナー
-  const toggleHighwaysButton = document.getElementById("toggle-avoidHighways");
-  if (toggleHighwaysButton) {
-    toggleHighwaysButton.addEventListener("click", () => toggleRoute("avoidHighways"));
-  }
-});
+    // 切り替えボタンのイベントリスナー(後日実装)
+    const toggleHighwaysButton = document.getElementById("toggle-avoidHighways");
+    if (toggleHighwaysButton) {
+      toggleHighwaysButton.addEventListener("click", () => toggleRoute("avoidHighways"));
+    }
+  });
 
 
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&libraries=geometry&callback=initMap" data-turbo-track="reload"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&loading=async&libraries=geometry" data-turbo-track="reload"></script>
