@@ -51,12 +51,12 @@
               Google Mapで開く
             <% end %>
           </li>
-          <button class="btn my-4" data-lat="<%= @destination.latitude %>" data-lng="<%= @destination.longitude %>">
+          <button id="route-button" class="btn my-4">
             行ってみる
           </button>
           <dialog id="route-modal" class="modal">
             <div class="modal-box">
-              <form method="dialog">
+              <form method="dialog" class="modal-backdrop">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
               </form>
               <div id="route-content"></div>
@@ -89,6 +89,7 @@
     if (mapInitialized) {
       return;
     }
+    mapInitialized = true;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function(position) {
@@ -131,7 +132,6 @@
           );
           setDestinationMarker(setLocation, map)
           streetViewService(setLocation)
-          mapInitialized = true;
         }
       );
     } else { // Geolocation APIをサポートしていないブラウザの処理
@@ -149,7 +149,6 @@
         );
       setDestinationMarker(setLocation, map)
       streetViewService(setLocation)
-      mapInitialized = true;
     }
   }
 
@@ -171,7 +170,7 @@
       avoidHighways: { ...baseRequest, avoidTolls: true, avoidHighways: true },
     };
 
-    // 各ルートを DirectionsService で取得し、描画
+    // 各ルートを DirectionsService で取得して描画
     Object.keys(requests).forEach((key) => {
       directionsService.route(requests[key], (response, status) => {
         if (status === 'OK') {
@@ -290,16 +289,12 @@
             let durationSeconds;
             if (route.legs[0].duration_in_traffic) {
               duration = route.legs[0].duration_in_traffic.text;
-              durationSeconds = route.legs[0].duration.value;
             } else {
               duration = route.legs[0].duration.text;
-              durationSeconds = route.legs[0].duration.value;
             }
-            const drivingMinutes = Math.ceil(durationSeconds / 60);
             const drivingTime = duration.replace("hours", "時間").replace("mins", "分");
             const textDistance = route.legs[0].distance.text; // 距離をstring型でkmで取得
-            const numberDistance = route.legs[0].distance.value; // 距離をメートルで取得
-            resolve({ type, drivingTime, textDistance, numberDistance, drivingMinutes });
+            resolve({ type, drivingTime, textDistance });
           } else {
             reject('Directions request failed' + status);
           }
@@ -310,52 +305,57 @@
     return Promise.all(promises);
   }
 
-  document.addEventListener("turbo:load", () => {
+  document.addEventListener("turbo:load", async () => {
     if (!mapInitialized) {
       initMap();
     }
+  
     // 初期ルートを表示
     displayRoutes(setLocation);
     toggleRoute("avoidHighways");
-
-    // 「行ってみる」ボタンのイベントリスナー
-    const buttons = document.querySelectorAll("button[data-lat][data-lng]");
-    buttons.forEach((button) => {
-      button.addEventListener("click", async () => {
-        try {
-          const routeInfos = await getRoutes(setLocation);
-
-          // モーダル要素の取得
-          const routeModal = document.getElementById("route-modal");
-          const routeContent = document.getElementById("route-content");
-
-          // ルート情報をモーダルに挿入
-          routeContent.innerHTML = `
-            <h2 class="text-xl">ルート情報</h2>
-            <p>※実際の交通規制に従って走行してください</p>
-            <ul>
-              ${routeInfos.map(info => `
-                <li class="py-4 text-center">
-                  <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
-                  <p>所要時間: ${info.drivingTime}</p>
-                  <p>距離: ${info.textDistance}</p>
-                  <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
-                    このルートで行く
-                  </a>
-                </li>
-              `).join("")}
-            </ul>
-          `;
-
-          routeModal.showModal();
-        } catch (error) {
-          console.error("ルート情報の取得に失敗しました:", error);
-          alert("ルート情報の取得に失敗しました。");
-        }
-      });
+  
+    // 「行ってみる」ボタンとモーダル要素の取得
+    const button = document.querySelector("#route-button");
+    const routeModal = document.getElementById("route-modal");
+    const routeContent = document.getElementById("route-content");
+  
+    if (!button || !routeModal || !routeContent) {
+      console.error("必要な要素が見つかりません");
+      return;
+    }
+  
+    try {
+      // ルート情報を事前に取得
+      const routeInfos = await getRoutes(setLocation);
+  
+      // モーダル内にルート情報を挿入
+      routeContent.innerHTML = `
+        <h2 class="text-xl">ルート情報</h2>
+        <p>※実際の交通規制に従って走行してください</p>
+        <ul>
+          ${routeInfos.map(info => `
+            <li class="py-4 text-center">
+              <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
+              <p>所要時間: ${info.drivingTime}</p>
+              <p>距離: ${info.textDistance}</p>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
+                このルートで行く
+              </a>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+    } catch (error) {
+      console.error("ルート情報の取得に失敗しました:", error);
+      routeContent.innerHTML = `<p class="text-red-500">ルート情報の取得に失敗しました。再試行してください。</p>`;
+    }
+  
+    // ボタンのクリックイベントでモーダルを開く
+    button.addEventListener("click", () => {
+      routeModal.showModal();
     });
-
-    // 切り替えボタンのイベントリスナー(後日実装)
+  
+    // 切り替えボタンのイベントリスナー(実装予定)
     const toggleHighwaysButton = document.getElementById("toggle-avoidHighways");
     if (toggleHighwaysButton) {
       toggleHighwaysButton.addEventListener("click", () => toggleRoute("avoidHighways"));
