@@ -1,7 +1,7 @@
 # ■サービス名
 ### **Ride finder**   
-アプリURL: https://ride-finder.com
-[![Image from Gyazo](https://i.gyazo.com/c62c5f4569b618102817caf4196c8b66.png)](https://gyazo.com/c62c5f4569b618102817caf4196c8b66)
+サービスURL: https://ride-finder.com
+[![Image from Gyazo](https://i.gyazo.com/c1c780894d988f3f1bb9dc9975599ce7.png)](https://gyazo.com/c1c780894d988f3f1bb9dc9975599ce7)
 
 # ■サービス概要  
 バイク乗りの方向けにツーリングスポットを探してくれるサービスです。  
@@ -60,11 +60,26 @@
   - ルート情報取得機能(有料道路・有料区間回避ルート・下道の所要時間と距離の取得)
   - 独自ドメイン取得
   - テスト機能(RubocopによるLintチェック,RSpecによるモデルチェック)
+  - Gemini AIによる交通安全情報の発信
   
 # ■ 機能の実装方針予定
 - 実装予定機能
   - 通知機能(サービスを継続的に使ってもらえるようにメールまたはLINE Messaging APIで保存したロケーションを通知)
-  - gemini AIを使った候補地取得
+ 
+
+# ■ 使用技術
+| カテゴリ | 技術内容 |
+| ---- | ---- |
+| サーバーサイド | Ruby:3.2.3 / Ruby on Rails:7.0.8 |
+| フロントエンド | HTML / CSS / JavaScript |
+| CSSフレームワーク | Tailwind CSS / daisyUI |
+| Web API | Maps JavaScript API / Places API / Geolocation API / LineログインAPI / Google ログイン API / Gemini API |
+| データベース | PostgreSQL |
+| インフラ | Fly.io / Amazon S3 |
+| CI/CD | Github |
+| 認証 | OmniAuth |
+| 環境構築 | Docker |
+
 
 
 # ■ ER図
