@@ -118,6 +118,44 @@
 
     console.log("displayRoute呼び出し")
     displayRoutes(setLocation);
+
+    // 「行ってみる」ボタンとモーダル要素の取得
+    const button = document.querySelector("#route-button");
+    const routeModal = document.querySelector("#route-modal");
+    const routeContent = document.querySelector("#route-content");
+  
+
+      // ルート情報を取得
+      const routeInfos = await getRoutes(setLocation);
+      console.log("routeInfoまでの処理が終了")
+  
+  
+      // モーダル内にルート情報を挿入
+      routeContent.innerHTML = `
+        <h2 class="text-xl">ルート情報</h2>
+        <p>※実際の交通規制に従って走行してください</p>
+        <ul>
+          ${routeInfos.map(info => `
+            <li class="py-4 text-center">
+              <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
+              <p>所要時間: ${info.drivingTime}</p>
+              <p>距離: ${info.textDistance}</p>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
+                このルートで行く
+              </a>
+            </li>
+          `).join("")}
+        </ul>
+      `;
+  
+    // ボタンのクリックイベントでモーダルを開く
+    button.addEventListener("click", () => {
+      routeModal.showModal();
+    });
+    const closeButton = document.querySelector(".btn-circle");
+    closeButton.addEventListener("click", () => {
+      routeModal.close();
+    });
   } catch (error) {
     console.error("現在地の取得に失敗しました:", error);
 
@@ -187,7 +225,7 @@
 
           // マーカーを設定
           const leg = response.routes[0].legs[0];
-          if (key === "avoidHighways") {
+          if (key === "avoidHi ghways") {
             // 現在地のマーカー
             new google.maps.Marker({
               position: leg.start_location,
@@ -321,41 +359,7 @@
     }
     console.log("addEventListener処理開始")
   
-    // 「行ってみる」ボタンとモーダル要素の取得
-    const button = document.querySelector("#route-button");
-    const routeModal = document.querySelector("#route-modal");
-    const routeContent = document.querySelector("#route-content");
-  
-
-      // ルート情報を取得
-      const routeInfos = await getRoutes(setLocation);
-      console.log("routeInfoまでの処理が終了")
-  
-  
-      // モーダル内にルート情報を挿入
-      routeContent.innerHTML = `
-        <h2 class="text-xl">ルート情報</h2>
-        <p>※実際の交通規制に従って走行してください</p>
-        <ul>
-          ${routeInfos.map(info => `
-            <li class="py-4 text-center">
-              <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
-              <p>所要時間: ${info.drivingTime}</p>
-              <p>距離: ${info.textDistance}</p>
-              <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
-                このルートで行く
-              </a>
-            </li>
-          `).join("")}
-        </ul>
-      `;
-      console.log(`info.typeは${info.type}`)
-  
-    // ボタンのクリックイベントでモーダルを開く
-    button.addEventListener("click", () => {
-      console.log("Button clicked!")
-      routeModal.showModal();
-    });
+   
   
     // 切り替えボタンのイベントリスナー(実装予定)
     const toggleHighwaysButton = document.getElementById("toggle-avoidHighways");
