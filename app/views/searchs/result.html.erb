@@ -55,12 +55,10 @@ switch("<%= @category %>"){
     break;
 };
 
-console.log("<%= @category %>")
 const condition = "<%= @condition %>"
 let timeLimit;
 let radius;
 
-// 時間検索の際radiusが大きすぎるとフィルタリングで結果が全然表示されないから調整
 if (condition === "time") {
   switch ("<%= @condition_value %>") {
     case "60":
@@ -83,8 +81,6 @@ if (condition === "time") {
   radius = "<%= @condition_value %>" * 1000;
   checkConditionDistance = true;
 }
-console.log("<%= @condition_value %>")
-console.log(radius)
 
 function initMap() {
   if (mapInitialized) {
@@ -168,7 +164,7 @@ function setCurrentLocationMarker(currentLocation, map){
 function getPlaceDetails(placeId, result) {
   const request = {
     placeId: placeId,
-    fields: ['website'], // 公式ウェブサイトのみ取得
+    fields: ['website'], // 公式サイトのみ取得
   };
 
   service.getDetails(request, (place, status) => {
@@ -218,14 +214,18 @@ function performNearbySearch(currentLocation) {
       console.log("nearbySearch実行中")
       console.log("NearbySearch Request:", request);
 
-      // nearbySearchだとformatted_addressが取得できないためgetDetailsで取得する
+      // nearbySearchで取得できない情報をgetDetailsで取得する
       let detailRequestsCompleted = 0; 
       results.forEach(result => {
-      service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website'] }, (place, status) => {
+      service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website', 'opening_hours'] }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           result.formatted_address = place.formatted_address;
           if (place.website){
             result.website = place.website;
+          }
+
+          if (place.opening_hours){
+            result.opening_hours = place.opening_hours.weekday_text
           }
         } else {
           console.error("Place Details request failed:", status);
@@ -409,7 +409,6 @@ function addPlaces(places, map) {
             currentInfoWindow = infoWindow; // 現在のウィンドウを更新
           });
 
-          // カード要素を作成
           const card = document.createElement("div");
           card.className = "card card-compact bg-base-100 shadow-xl my-4 w-112";
 
@@ -425,11 +424,10 @@ function addPlaces(places, map) {
           figure.appendChild(img);
           card.appendChild(figure);
 
-          // カード本文
           const cardBody = document.createElement("div");
           cardBody.className = "card-body";
 
-          // 名前
+          // スポット名
           const title = document.createElement("h2");
           title.className = "card-title";
           title.textContent = place.name;
@@ -449,7 +447,12 @@ function addPlaces(places, map) {
             cardBody.appendChild(rating);
           }
 
-          // ルート情報をカードに追加
+          if (place.opening_hours){
+            const openingHours = document.createElement("P");
+            openingHours.textContent = place.opening_hours;
+            cardBody.appendChild(openingHours);
+          }
+
           routeInfos.forEach(info => {
             const routeInfo = document.createElement("p");
             let routeTypeLabel = '';
@@ -464,7 +467,7 @@ function addPlaces(places, map) {
                 routeTypeLabel = "下道のみ";
                 break;
             }
-            routeInfo.textContent = `${routeTypeLabel}: 所要時間 ${info.drivingTime} (距離: 約${info.textDistance})`;
+            routeInfo.textContent = `${routeTypeLabel}: 予想所要時間 ${info.drivingTime} (距離: 約${info.textDistance})`;
             routeInfo.className = "text-sm text-gray-600 mt-2";
             cardBody.appendChild(routeInfo);
           });

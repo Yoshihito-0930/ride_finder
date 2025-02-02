@@ -321,7 +321,7 @@
         ${routeInfos.map(info => `
           <li class="py-4 text-center">
             <strong>${info.type === "noAvoid" ? "有料道路を使って行く" : info.type === "avoidTolls" ? "有料道路を回避して行く" : "下道だけで行く(125cc以下推奨)"}</strong>
-            <p>所要時間: ${info.drivingTime}</p>
+            <p>予想所要時間: ${info.drivingTime}</p>
             <p>距離: ${info.textDistance}</p>
             <a href="https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&travelmode=driving&avoid=${info.type === "avoidHighways" ? "tolls,highways" : info.type === "avoidTolls" ? "tolls" : ""}" target="_blank" class="btn">
               このルートで行く
