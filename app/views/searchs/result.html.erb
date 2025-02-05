@@ -184,7 +184,7 @@ function performNearbySearch(currentLocation) {
   console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
-  const moreButton = document.getElementById("more");
+  const moreButton = document.getElementById("more-button");
 
   if (moreButton) {
     moreButton.onclick = function () {
@@ -224,7 +224,10 @@ function performNearbySearch(currentLocation) {
             result.website = place.website;
           }
 
+          console.log("openning_hours確認")
           if (place.opening_hours){
+            console.log("openning_hoursはtrue")
+            console.log(place.opening_hours.weekday_text)
             result.opening_hours = place.opening_hours.weekday_text
           }
         } else {
