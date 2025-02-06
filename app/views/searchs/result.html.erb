@@ -183,6 +183,7 @@ function getPlaceDetails(placeId, result) {
 function performNearbySearch(currentLocation) {
   console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
+  console.log("service:", service);
   let getNextPage;
   const moreButton = document.getElementById("more-button");
 
@@ -205,50 +206,52 @@ function performNearbySearch(currentLocation) {
       language: 'ja'
     };
 
+    console.log("nearbySearch実行前")
+
     service.nearbySearch(request,
-    function (results, status, pagination) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-        console.log("nearbySearch止まっている",status)
-      return;
-      }
-      console.log("nearbySearch実行中")
-      console.log("NearbySearch Request:", request);
-
-      // nearbySearchで取得できない情報をgetDetailsで取得する
-      let detailRequestsCompleted = 0; 
-      results.forEach(result => {
-      service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website', 'opening_hours'] }, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          result.formatted_address = place.formatted_address;
-          if (place.website){
-            result.website = place.website;
-          }
-
-          console.log("openning_hours確認")
-          if (place.opening_hours){
-            console.log("openning_hoursはtrue")
-            console.log(place.opening_hours.weekday_text)
-            result.opening_hours = place.opening_hours.weekday_text
-          }
-        } else {
-          console.error("Place Details request failed:", status);
+      function (results, status, pagination) {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+          console.log("nearbySearch止まっている",status)
+        return;
         }
-        detailRequestsCompleted++;
-        if (detailRequestsCompleted === results.length) {
-          addPlaces(results, map);
-          if (moreButton) {
-            moreButton.disabled = !pagination || !pagination.hasNextPage;
+        console.log("nearbySearch実行中")
+        console.log("NearbySearch Request:", request);
 
-            if (pagination && pagination.hasNextPage) {
-              getNextPage = function () {
-                pagination.nextPage();
-              };
+        // nearbySearchで取得できない情報をgetDetailsで取得する
+        let detailRequestsCompleted = 0; 
+        results.forEach(result => {
+        service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website', 'opening_hours'], language: 'ja' }, (place, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            result.formatted_address = place.formatted_address;
+            if (place.website){
+              result.website = place.website;
             }
+
+            console.log("openning_hours確認")
+            if (place.opening_hours.weekday_text){
+              console.log("openning_hoursはtrue")
+              console.log(place.opening_hours.weekday_text)
+              result.business_hours = place.opening_hours.weekday_text
+            }
+          } else {
+            console.error("Place Details request failed:", status);
           }
-          console.log("NearbySearch終了");
-        }
+          detailRequestsCompleted++;
+          if (detailRequestsCompleted === results.length) {
+            addPlaces(results, map);
+            if (moreButton) {
+              moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+              if (pagination && pagination.hasNextPage) {
+                getNextPage = function () {
+                  pagination.nextPage();
+                };
+              }
+            }
+            console.log("NearbySearch終了");
+          }
+        });
       });
-    });
     });
   } else if(textCategory){
     request = {
@@ -272,6 +275,21 @@ function performNearbySearch(currentLocation) {
             filteredResults = results;
           }
         }
+        results.forEach(result => {
+        service.getDetails({ placeId: result.place_id, fields: ['website', 'opening_hours'], language: 'ja' }, (place, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            if (place.website){
+              result.website = place.website;
+            }
+
+            if (place.opening_hours.weekday_text){
+              result.business_hours = place.opening_hours.weekday_text
+            }
+          } else {
+            console.error("Place Details request failed:", status);
+          }
+        });
+      });
         addPlaces(filteredResults, map);
         if (moreButton) {
           moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -450,10 +468,15 @@ function addPlaces(places, map) {
             cardBody.appendChild(rating);
           }
 
-          if (place.opening_hours){
-            const openingHours = document.createElement("P");
-            openingHours.textContent = place.opening_hours;
-            cardBody.appendChild(openingHours);
+          if (place.business_hours){
+            const businessHours = document.createElement("P");
+            businessHours.textContent = ("営業時間");
+            cardBody.appendChild(businessHours);
+            for(let i=0; i < place.business_hours.length; i++){
+              const openingHours = document.createElement("P");
+              openingHours.textContent = place.business_hours[i]
+              cardBody.appendChild(openingHours);
+            }
           }
 
           routeInfos.forEach(info => {

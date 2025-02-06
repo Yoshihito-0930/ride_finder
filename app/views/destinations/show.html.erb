@@ -34,8 +34,15 @@
           <% end %>
           <li><%= @destination.address %> </li>
           <% if @destination.rating %>
-            <li><a >評価: ★<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件)</a> </li>
+            <li>評価: ★<%= @destination.rating %>(レビュー件数:<%=@destination.user_ratings_total%>件) </li>
           <% end %>
+          <div>
+            <% if @destination.business_hours %>
+              <p>営業時間</p>
+              <% @destination.business_hours.each do | business_hour |%>
+                <li><%= business_hour %> </li>
+              <% end %>
+            <% end %>
           <% if @destination.website %>
             <li>
               <%= link_to "#{@destination.website}", class: 'btn my-', target: :_blank do %> 
