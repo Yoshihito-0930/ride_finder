@@ -9,8 +9,8 @@ primary_region = 'nrt'
 [build]
   dockerfile = "Dockerfile"
 
-#[deploy]
-#  release_command = "bundle exec rails db:migrate"
+[deploy]
+  release_command = "bundle exec rails assets:precompile"
 
 [http_service]
   internal_port = 3000

@@ -183,7 +183,6 @@ function getPlaceDetails(placeId, result) {
 function performNearbySearch(currentLocation) {
   console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
-  console.log("service:", service);
   let getNextPage;
   const moreButton = document.getElementById("more-button");
 
@@ -227,10 +226,7 @@ function performNearbySearch(currentLocation) {
               result.website = place.website;
             }
 
-            console.log("openning_hours確認")
             if (place.opening_hours.weekday_text){
-              console.log("openning_hoursはtrue")
-              console.log(place.opening_hours.weekday_text)
               result.business_hours = place.opening_hours.weekday_text
             }
           } else {
@@ -539,13 +535,11 @@ function addPlaces(places, map) {
       }
     });
   } else {
-    console.log("addPlaces elseになっている");
     const li = document.createElement("li");
     const message = document.createElement("p");
 
     if (!places || !Array.isArray(places)) {
       // 現在地が取得できない場合
-      console.log("現在地が取得できないため、placesは無効");
       message.textContent = "現在地が取得できませんでした。お使いのブラウザの位置情報の取得を許可してください。";
       li.appendChild(message);
 
@@ -564,13 +558,11 @@ function addPlaces(places, map) {
 
     } else if (places.length === 0) {
       // 検索条件に一致する結果がない場合
-      console.log("条件に一致する候補地が見つからない");
       message.textContent = "検索条件に該当する候補地がありません。条件を変更して再検索してください。";
       li.appendChild(message);
 
     } else {
       // その他の予期しないエラー（補足的に追加）
-      console.log("予期しないエラーが発生しました");
       message.textContent = "予期しないエラーが発生しました。もう一度お試しください。";
       li.appendChild(message);
     }
