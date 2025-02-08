@@ -113,6 +113,7 @@
     );
 
     streetViewService(setLocation);
+    setCurrentLocationMarker(currentLocation, map)
     directionsService = new google.maps.DirectionsService();
     directionsRenderers = {
       noAvoid: new google.maps.DirectionsRenderer({ map }),
@@ -158,6 +159,22 @@
       } else {
         reject(new Error("お使いのブラウザではGeolocationがサポートされていません."));
       }
+    });
+  }
+
+  // 現在地を示す青丸のアイコン
+  function setCurrentLocationMarker(currentLocation, map){
+    new google.maps.Marker({
+        position: currentLocation,
+        map: map,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#115EC3',
+          fillOpacity: 1,
+          strokeColor: 'white',
+          strokeWeight: 2,
+          scale: 7
+        },
     });
   }
 
