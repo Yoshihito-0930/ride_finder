@@ -55,12 +55,10 @@ switch("<%= @category %>"){
     break;
 };
 
-console.log("<%= @category %>")
 const condition = "<%= @condition %>"
 let timeLimit;
 let radius;
 
-// 時間検索の際radiusが大きすぎるとフィルタリングで結果が全然表示されないから調整
 if (condition === "time") {
   switch ("<%= @condition_value %>") {
     case "60":
@@ -83,8 +81,6 @@ if (condition === "time") {
   radius = "<%= @condition_value %>" * 1000;
   checkConditionDistance = true;
 }
-console.log("<%= @condition_value %>")
-console.log(radius)
 
 function initMap() {
   if (mapInitialized) {
@@ -113,7 +109,6 @@ function initMap() {
         );
         // 現在地を示す青丸のアイコンを表示
         setCurrentLocationMarker(currentLocation, map);
-        console.log("initMap: performNearbySearchを呼び出し");
         performNearbySearch(currentLocation, timeLimit);
       },
       function(error) {
@@ -168,7 +163,7 @@ function setCurrentLocationMarker(currentLocation, map){
 function getPlaceDetails(placeId, result) {
   const request = {
     placeId: placeId,
-    fields: ['website'], // 公式ウェブサイトのみ取得
+    fields: ['website'], // 公式サイトのみ取得
   };
 
   service.getDetails(request, (place, status) => {
@@ -185,10 +180,9 @@ function getPlaceDetails(placeId, result) {
 };
 
 function performNearbySearch(currentLocation) {
-  console.log("performNearbySearch: 呼び出し");
   const service = new google.maps.places.PlacesService(map);
   let getNextPage;
-  const moreButton = document.getElementById("more");
+  const moreButton = document.getElementById("more-button");
 
   if (moreButton) {
     moreButton.onclick = function () {
@@ -205,47 +199,48 @@ function performNearbySearch(currentLocation) {
     request = {
       location: currentLocation,
       radius: radius,
-      type: [typeCategory],
+      type: typeCategory,
       language: 'ja'
     };
 
     service.nearbySearch(request,
-    function (results, status, pagination) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-        console.log("nearbySearch止まっている",status)
-      return;
-      }
-      console.log("nearbySearch実行中")
-      console.log("NearbySearch Request:", request);
-
-      // nearbySearchだとformatted_addressが取得できないためgetDetailsで取得する
-      let detailRequestsCompleted = 0; 
-      results.forEach(result => {
-      service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website'] }, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          result.formatted_address = place.formatted_address;
-          if (place.website){
-            result.website = place.website;
-          }
-        } else {
-          console.error("Place Details request failed:", status);
+      function (results, status, pagination) {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+          console.error("nearbySearch status error",status)
+        return;
         }
-        detailRequestsCompleted++;
-        if (detailRequestsCompleted === results.length) {
-          addPlaces(results, map);
-          if (moreButton) {
-            moreButton.disabled = !pagination || !pagination.hasNextPage;
 
-            if (pagination && pagination.hasNextPage) {
-              getNextPage = function () {
-                pagination.nextPage();
-              };
+        // nearbySearchで取得できない情報をgetDetailsで取得する
+        let detailRequestsCompleted = 0; 
+        results.forEach(result => {
+        service.getDetails({ placeId: result.place_id, fields: ['formatted_address', 'website', 'opening_hours'], language: 'ja' }, (place, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            result.formatted_address = place.formatted_address;
+            if (place.website){
+              result.website = place.website;
+            }
+
+            if (place.opening_hours && place.opening_hours.weekday_text){
+              result.business_hours = place.opening_hours.weekday_text
+            }
+          } else {
+            console.error("Place Details request failed:", status);
+          }
+          detailRequestsCompleted++;
+          if (detailRequestsCompleted === results.length) {
+            addPlaces(results, map);
+            if (moreButton) {
+              moreButton.disabled = !pagination || !pagination.hasNextPage;
+
+              if (pagination && pagination.hasNextPage) {
+                getNextPage = function () {
+                  pagination.nextPage();
+                };
+              }
             }
           }
-          console.log("NearbySearch終了");
-        }
+        });
       });
-    });
     });
   } else if(textCategory){
     request = {
@@ -257,7 +252,6 @@ function performNearbySearch(currentLocation) {
     service.textSearch(request,
       function (results, status, pagination) {
         let filteredResults
-        console.log("textSearch開始");
         if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
           filteredResults = "検索に該当する候補地がありません"
         }else{
@@ -269,6 +263,21 @@ function performNearbySearch(currentLocation) {
             filteredResults = results;
           }
         }
+        results.forEach(result => {
+        service.getDetails({ placeId: result.place_id, fields: ['website', 'opening_hours'], language: 'ja' }, (place, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            if (place.website){
+              result.website = place.website;
+            }
+
+            if (place.opening_hours && place.opening_hours.weekday_text){
+              result.business_hours = place.opening_hours.weekday_text
+            }
+          } else {
+            console.error("Place Details request failed:", status);
+          }
+        });
+      });
         addPlaces(filteredResults, map);
         if (moreButton) {
           moreButton.disabled = !pagination || !pagination.hasNextPage;
@@ -279,11 +288,9 @@ function performNearbySearch(currentLocation) {
             };
           }
         }
-        console.log("textSearch終了");
       }
     );
   }
-  console.log("performNearbySearch: 終了");
 }
 
 
@@ -409,7 +416,6 @@ function addPlaces(places, map) {
             currentInfoWindow = infoWindow; // 現在のウィンドウを更新
           });
 
-          // カード要素を作成
           const card = document.createElement("div");
           card.className = "card card-compact bg-base-100 shadow-xl my-4 w-112";
 
@@ -425,11 +431,10 @@ function addPlaces(places, map) {
           figure.appendChild(img);
           card.appendChild(figure);
 
-          // カード本文
           const cardBody = document.createElement("div");
           cardBody.className = "card-body";
 
-          // 名前
+          // スポット名
           const title = document.createElement("h2");
           title.className = "card-title";
           title.textContent = place.name;
@@ -449,7 +454,17 @@ function addPlaces(places, map) {
             cardBody.appendChild(rating);
           }
 
-          // ルート情報をカードに追加
+          if (place.business_hours){
+            const businessHours = document.createElement("P");
+            businessHours.textContent = ("営業時間");
+            cardBody.appendChild(businessHours);
+            for(let i=0; i < place.business_hours.length; i++){
+              const openingHours = document.createElement("P");
+              openingHours.textContent = place.business_hours[i]
+              cardBody.appendChild(openingHours);
+            }
+          }
+
           routeInfos.forEach(info => {
             const routeInfo = document.createElement("p");
             let routeTypeLabel = '';
@@ -464,7 +479,7 @@ function addPlaces(places, map) {
                 routeTypeLabel = "下道のみ";
                 break;
             }
-            routeInfo.textContent = `${routeTypeLabel}: 所要時間 ${info.drivingTime} (距離: 約${info.textDistance})`;
+            routeInfo.textContent = `${routeTypeLabel}: 予想所要時間 ${info.drivingTime} (距離: 約${info.textDistance})`;
             routeInfo.className = "text-sm text-gray-600 mt-2";
             cardBody.appendChild(routeInfo);
           });
@@ -510,13 +525,11 @@ function addPlaces(places, map) {
       }
     });
   } else {
-    console.log("addPlaces elseになっている");
     const li = document.createElement("li");
     const message = document.createElement("p");
 
     if (!places || !Array.isArray(places)) {
       // 現在地が取得できない場合
-      console.log("現在地が取得できないため、placesは無効");
       message.textContent = "現在地が取得できませんでした。お使いのブラウザの位置情報の取得を許可してください。";
       li.appendChild(message);
 
@@ -535,13 +548,11 @@ function addPlaces(places, map) {
 
     } else if (places.length === 0) {
       // 検索条件に一致する結果がない場合
-      console.log("条件に一致する候補地が見つからない");
       message.textContent = "検索条件に該当する候補地がありません。条件を変更して再検索してください。";
       li.appendChild(message);
 
     } else {
       // その他の予期しないエラー（補足的に追加）
-      console.log("予期しないエラーが発生しました");
       message.textContent = "予期しないエラーが発生しました。もう一度お試しください。";
       li.appendChild(message);
     }
@@ -551,4 +562,4 @@ function addPlaces(places, map) {
 }
 
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&loading=async&libraries=places,geometry&callback=initMap" data-turbo-track="reload"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>&loading=async&libraries=places,geometry&callback=initMap""></script>

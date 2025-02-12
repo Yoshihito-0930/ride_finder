@@ -12,6 +12,8 @@ class Destination < ApplicationRecord
   geocoded_by :address
   after_validation :geocode
 
+  serialize :business_hours, Array
+
   def self.find_or_create_destination(place_data)
     find_or_create_by(google_maps_place_id: place_data['place_id']) do |destination|
       destination.name = place_data['name']
@@ -24,9 +26,7 @@ class Destination < ApplicationRecord
       attach_image(destination, place_data['photo_url']) if place_data['photo_url'].present?
 
       # 営業時間の処理 後ほど修正
-      if place_data['opening_hours'] && place_data['opening_hours']['weekday_text']
-        destination.business_hours = place_data['opening_hours']['weekday_text'].join("\n")
-      end
+      destination.business_hours = place_data['business_hours'] if place_data['business_hours']
     end
   end
 

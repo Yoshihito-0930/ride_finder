@@ -18,6 +18,14 @@
         <% if destination.rating.present? %>
           <li>★<%= destination.rating %>(レビュー件数:<%= destination.user_ratings_total%>件)</li>
         <% end %>
+        <div>
+          <% if destination.business_hours.present? %>
+            <p>営業時間</p>
+            <% destination.business_hours.each do |business_hour| %>
+              <li><%= business_hour %></li>
+            <% end %>
+          <% end %>
+        </div>
         <div class="card-actions justify-end">
           <%= button_to "詳細", destination_path(destination), class: "btn", method: :get, data: { turbo: false }%>
         </div>
