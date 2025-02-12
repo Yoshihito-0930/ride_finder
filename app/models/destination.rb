@@ -26,9 +26,7 @@ class Destination < ApplicationRecord
       attach_image(destination, place_data['photo_url']) if place_data['photo_url'].present?
 
       # 営業時間の処理 後ほど修正
-      if place_data['business_hours']
-        destination.business_hours = place_data['business_hours']
-      end
+      destination.business_hours = place_data['business_hours'] if place_data['business_hours']
     end
   end
 
