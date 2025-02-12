@@ -67,3 +67,4 @@
 config/sturdy-device-422904-s9-bedb4c796965.json
 
 /log/development.log
+*.fly.toml

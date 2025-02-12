@@ -1,21 +1,23 @@
-<div class="pb-10 min-h-screen">
+<div class="pb-10 min-h-screen bg-base-100">
   <ul class="menu items-center ">
-    <h2 class="text-2xl py-10">マイページメニュー</h2>
-    <%= image_tag @user.image, size: "200x200" %>
-    <p class="text-lg">ユーザー名： <%= @user.name %></p>
-    <div class="py-4">
-      <li>
-        <%= link_to favorites_destinations_path, class: "my-2" do %>
-          <%= image_tag "favorite_mark.svg", size:'28x28' %>
-          お気に入り一覧
-        <% end %>
-      </li>
-      <li>
-        <%= link_to future_visits_destinations_path, class: "my-2" do %>
-        <%= image_tag "future_visit_icon.svg", size:'28x28' %>
-        後で行きたい一覧
-        <% end %>
-      </li>
+    <h2 class="text-2xl py-8">マイページメニュー</h2>
+    <div class="card bg-base-200 w-96 shadow-xl my-4 items-center">
+      <%= image_tag @user.image, size: "200x200", class: "my-4"%>
+      <p class="text-lg">ユーザー名： <%= @user.name %></p>
+      <div class="py-4">
+        <li>
+          <%= link_to favorites_destinations_path, class: "my-2" do %>
+            <%= image_tag "favorite_mark.svg", size:'28x28' %>
+            お気に入り一覧
+          <% end %>
+        </li>
+        <li>
+          <%= link_to future_visits_destinations_path, class: "my-2" do %>
+          <%= image_tag "future_visit_icon.svg", size:'28x28' %>
+          後で行きたい一覧
+          <% end %>
+        </li>
+      </div>
     </div>
   </ul>
 </div>
