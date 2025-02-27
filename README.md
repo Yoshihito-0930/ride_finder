@@ -33,7 +33,7 @@
 |ユーザー登録/ログイン|
 | ---- |
 |[![Image from Gyazo](https://i.gyazo.com/7f7044056c4c8b0b30c5ce31b637181e.gif)](https://gyazo.com/7f7044056c4c8b0b30c5ce31b637181e)|
-| 機能説明 |
+| ユーザー登録及びログインがGoogleアカウントもしくはLINEアカウントでIDやパスワードを覚える必要も無く簡単に出来ます。 |
 
 |ツーリングスポット検索　|
 | ---- |
@@ -57,8 +57,8 @@
 
 |AIによる交通安全情報の発信|
 | ---- |
-|[![Image from Gyazo](https://i.gyazo.com/4b5c8978a513e67d5ab992aa3c13073b.gif)](https://gyazo.com/4b5c8978a513e67d5ab992aa3c13073b)|
-| 機能説明 |
+[![Image from Gyazo](https://i.gyazo.com/69bb2eb7fdf3c70af70489fbbebe23ff.png)](https://gyazo.com/69bb2eb7fdf3c70af70489fbbebe23ff)
+| トップページ上部にGemini AIによって生成したバイクの交通安全情報が毎日発信されます |
 
 
 
